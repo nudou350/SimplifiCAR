@@ -1,0 +1,32 @@
+# SimplifiCAR — PostGIS local (docs/07_contrato_mvp.md §2)
+# Sobe um PostgreSQL 16 + PostGIS já com schema + seed dos 4 imóveis-demo.
+#   docker compose -f db/docker-compose.yml up -d
+# Conexão: postgresql://hacarthon_user:hacarthon_pass@localhost:55432/hacarthon
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: hacarthon_db
+    environment:
+      POSTGRES_DB: hacarthon
+      POSTGRES_USER: hacarthon_user
+      POSTGRES_PASSWORD: hacarthon_pass
+    ports:
+      # Host 5433 is taken by a native Windows postgresql-x64-18 service, which
+      # silently shadows the container. Use 55432 on the host to avoid the clash.
+      - "55432:5432"
+    volumes:
+      - hacarthon_pgdata:/var/lib/postgresql/data
+      # Auto-init: schema primeiro (01), seed depois (02). Rodam só em volume vazio.
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./seed/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hacarthon_user -d hacarthon"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  hacarthon_pgdata:

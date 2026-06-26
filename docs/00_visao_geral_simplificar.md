@@ -1,8 +1,8 @@
-# Reverde — Visão Geral do Projeto
+# SimplifiCAR — Visão Geral do Projeto
 
 > Documento base, lido pelos dois membros do time. É a fonte da verdade do projeto.
 > As docs técnica (Raphael) e de domínio/pitch (Bianca) se penduram nesta.
-> **Nome de trabalho:** "Reverde" (re + verde). Alternativa anterior: "Meu CAR em Dia". A confirmar.
+> **Nome:** "SimplifiCAR" (simplificar + CAR) — definido. Nomes anteriores descartados: "Reverde", "Meu CAR em Dia".
 
 ---
 

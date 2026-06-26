@@ -1,0 +1,6 @@
+# Pipeline de pré-processamento geoespacial (Doc 2 §4)
+# Instalar em venv:  python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
+rasterio>=1.4      # leitura de raster + GDAL embutido (clip via /vsicurl, sem GEE)
+geopandas>=1.0     # leitura de shapefiles do CAR, geometria
+shapely>=2.0       # operações geométricas
+rasterstats>=0.20  # zonal stats (vegetação nativa por polígono de RL)

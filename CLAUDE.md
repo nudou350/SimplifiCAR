@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## O que é este projeto
 
-**Reverde** (nome de trabalho) — projeto de hackathon (Desafio 2: CAR / Cadastro Ambiental Rural). Plataforma que diagnostica a conformidade ambiental de imóveis rurais contra o Código Florestal, ajuda a retificar o cadastro, e conecta excedente e déficit de mata num marketplace (venda de CRA / aluguel de servidão).
+**SimplifiCAR** (simplificar + CAR) — projeto de hackathon (Desafio 2: CAR / Cadastro Ambiental Rural). Plataforma que diagnostica a conformidade ambiental de imóveis rurais contra o Código Florestal, ajuda a retificar o cadastro, e conecta excedente e déficit de mata num marketplace (venda de CRA / aluguel de servidão).
 
 A fonte da verdade do produto e da arquitetura está em `docs/`:
-- `docs/00_visao_geral_reverde.md` — visão, escopo, fluxo do demo. **Leia primeiro.**
+- `docs/00_visao_geral_simplificar.md` — visão, escopo, fluxo do demo. **Leia primeiro.**
 - `docs/01_documentacao_tecnica_raphael.md` — arquitetura, stack, modelo de dados, API, ordem de build.
 - `docs/02_documentacao_dominio_pitch_bianca.md` — regras do Código Florestal que viram cálculo, pitch.
 
@@ -56,9 +56,45 @@ Sempre exista um demo funcional. Construa e proteja a **base** antes de tocar na
 
 Tabelas mínimas do PostGIS: `usuario`, `propriedade`, `diagnostico`, `pendencia`, `oferta`, `match` (detalhe na seção 5 do doc técnico).
 
+## Dados de teste locais (já colhidos)
+
+Há dados reais de teste do CAR colhidos do ambiente DataPrev (que expira 28/06/2026) em `data/raw/` (gitignored). Use-os para desenvolver/testar sem depender do ambiente online. Detalhes de formato e API em `docs/04_ambiente_teste_api_e_formato.md`; manifesto em `data/raw/README.md`.
+
+- `data/raw/imoveis_index.json` — comece por aqui: 11 imóveis com diagnóstico resumido.
+- `data/raw/demonstrativos/<CAR>.json` — diagnóstico oficial completo por imóvel (gabarito p/ validar nosso cálculo).
+- `data/raw/geojson/<CAR>.geojson` — geometria por camada (SIRGAS 2000), pronta p/ Leaflet/PostGIS.
+- `data/raw/ret/<CAR>_{completo,simplificado}.ret` — arquivos `.RET` (ZIP de JSON) p/ testar o parser da Análise Completa.
+- `data/shapefiles/DF/` — shapefiles públicos do CAR (Distrito Federal completo, 6 camadas, SIRGAS 2000) = base da Consulta Rápida; ver `data/shapefiles/README.md` + dicionário oficial em PDF.
+- `data/mapbiomas/DF_mapbiomas_col10_2024.tif` — recorte MapBiomas (cobertura do solo, 30 m) do DF = vegetação real p/ déficit vs declarado; ver `data/mapbiomas/README.md`.
+
+**Pipeline já bootstrapado:** venv em `pipeline/.venv` (rasterio, geopandas, shapely, rasterstats — `pipeline/requirements.txt`). Scripts: `pipeline/clip_mapbiomas.py` (recorta MapBiomas via `/vsicurl/`, sem GEE) e `pipeline/proof_chain.py` (prova de ponta a ponta: RL × MapBiomas → déficit/excedente — já validada). A cadeia de cálculo do Doc 2 §4 está comprovada com dados reais do DF.
+
+Casos de demo definidos: 🟢 `MG-3127008-...` (excedente, geometria rica), 🔴 `CE-2313302-...` (recompor RL+APP), ⚫ déficit forte `CE-2300705-...` e `PR-4110201-...`.
+
+Insight que isso valida: o `.RET`/`.CAR` é ZIP de JSON com geometria em GeoJSON padrão (parse trivial), e o SICAR já calcula o diagnóstico — nossa fórmula de RL bate com o número oficial. Não tratar o `.CAR` como formato proprietário fechado.
+
 ## Comandos
 
-O projeto ainda não foi inicializado — não há `package.json`, build, lint ou testes. Ao fazer o scaffold, registre aqui os comandos reais (instalar, rodar dev do NestJS e do Angular, subir PostGIS, rodar o pipeline Python, testes). Até lá, não invente comandos.
+MVP scaffoldado (NestJS + Angular + PostGIS). Contrato congelado entre as três camadas: **`docs/07_contrato_mvp.md`** (modelo de dados, shapes de API, portas, seed). Leia-o antes de mexer em qualquer camada.
+
+```bash
+# 1) Banco (PostGIS via docker) — sobe schema + seed dos 4 imóveis-demo automaticamente
+docker compose -f db/docker-compose.yml up -d            # porta 55432 no host (ver nota abaixo)
+docker compose -f db/docker-compose.yml down -v          # reset total + re-seed na próxima subida
+pipeline/.venv/Scripts/python.exe db/seed/build_seed_sql.py   # regenera db/seed/seed.sql a partir de data/raw
+
+# 2) Backend NestJS (porta 3012) — lê DATABASE_URL de backend/.env
+cd backend && npm install && npm run start:dev           # dev (watch)
+cd backend && npm run build && node dist/main.js         # prod local
+
+# 3) Frontend Angular (porta 4200) — apiBase em src/environments/environment.ts
+cd frontend && npm install && npm start                  # ng serve
+cd frontend && npm run build                             # build de produção
+```
+
+**Gotcha de porta (Windows):** a 5433 é ocupada por um serviço nativo `postgresql-x64-18`, e o Docker Desktop falha **silenciosamente** ao publicar nela (o backend acaba batendo no PG nativo → `password authentication failed for user "hacarthon_user"`). Por isso o PostGIS do projeto usa **55432** no host (em `db/docker-compose.yml`, `backend/.env` e `docs/07 §2`). Se a auth falhar, confira que o container mostra `0.0.0.0:55432->5432` em `docker ps`.
+
+**Fluxo de demo verificado (end-to-end, dados reais):** Abertura → "ver exemplo" (`MG-3127008`, excedente, score 100, "anunciar") ou consultar `CE-2300705` (déficit 21,3 ha, score 25, "compensar") → Painel com mapa Leaflet acendendo camadas + selo + `texto_ia` do banco → ação gated → login gov.br mock → Marketplace (6 ofertas) → "casar" (`POST /marketplace/match`). Upload `.RET` (Análise Completa) validado contra `CE-2313302`.
 
 ## Infra / deploy
 

@@ -12,11 +12,14 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+pipeline/.venv/
 *.egg-info/
 
 # Dados geoespaciais brutos / pesados (não versionar shapefiles, rasters, dumps)
 data/raw/
 data/processed/
+data/shapefiles/
+data/mapbiomas/
 *.shp
 *.shx
 *.dbf
@@ -27,6 +30,9 @@ data/processed/
 *.gpkg
 *.sql.gz
 *.dump
+
+# playwright-cli (sessão, snapshots, scripts temporários)
+.playwright-cli/
 
 # OS / editores
 .DS_Store

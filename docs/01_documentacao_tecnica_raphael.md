@@ -1,4 +1,4 @@
-# Reverde — Documentação Técnica (Raphael)
+# SimplifiCAR — Documentação Técnica (Raphael)
 
 > Manual de execução do núcleo técnico. Pende da Doc 1 (Visão Geral).
 > Foco: arquitetura, dados, API, frontend, IA, e a ordem de construção do fim de semana.

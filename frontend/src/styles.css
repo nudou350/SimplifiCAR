@@ -1,0 +1,29 @@
+/* SimplifiCAR global styles — base reset + animations from the approved design. */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Public Sans', system-ui, -apple-system, sans-serif; background: #EFF1EB; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input { font: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid #2D6FA6; outline-offset: 2px; border-radius: 5px; }
+
+@keyframes scStamp {
+  0%   { transform: scale(1.22) rotate(-7deg); opacity: 0; }
+  55%  { transform: scale(.94) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-2.5deg); opacity: 1; }
+}
+@keyframes scSpin { to { transform: rotate(360deg); } }
+@keyframes scFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scPulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Leaflet inside the dark cadastral panel */
+.leaflet-container { background: transparent; outline: none; }
+.leaflet-control-zoom a { color: #1B2018; }

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input{font:inherit}
+  a{color:inherit}
+  :focus-visible{outline:3px solid #2D6FA6;outline-offset:2px;border-radius:5px}
+  @keyframes scStamp{0%{transform:scale(1.22) rotate(-7deg);opacity:0}55%{transform:scale(.94) rotate(-2deg);opacity:1}100%{transform:scale(1) rotate(-2.5deg);opacity:1}}
+  @keyframes scSpin{to{transform:rotate(360deg)}}
+  @keyframes scFade{from{opacity:0}to{opacity:1}}
+  @keyframes scDraw{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+  @keyframes scPulse{0%,100%{opacity:1}50%{opacity:.25}}
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</helmet>
+<div style="--papel:#EFF1EB;--card:#FAFBF7;--tinta:#1B2018;--tinta-muda:#4A4F44;--linha:#D6DACE;--mata:#1F8D49;--mata-tx:#14532D;--agua:#2D6FA6;--deficit:#C8442B;--deficit-tx:#8F2D1B;--valor:#C9A227;--valor-tx:#8A6D12;--sav:#7DC975;--campo:#D6BC74;--uso:#E0C97F;font-family:'Public Sans',system-ui,-apple-system,sans-serif;color:var(--tinta);background:var(--papel);min-height:100vh;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased;">
+
+  <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(#D6DACE 1px,transparent 1px),linear-gradient(90deg,#D6DACE 1px,transparent 1px);background-size:46px 46px;opacity:.4;"></div>
+  <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(120% 80% at 50% -10%,rgba(239,241,235,0) 40%,#EFF1EB 78%);"></div>
+
+  <header role="banner" style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px clamp(16px,4vw,40px);max-width:1280px;margin:0 auto;">
+    <a onClick="{{ goHome }}" aria-label="SimplifiCAR, página inicial" style="display:inline-flex;align-items:center;gap:7px;text-decoration:none;cursor:pointer;">
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(20px,2.4vw,25px);color:var(--tinta);letter-spacing:-.02em;">Simplifi</span>
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(20px,2.4vw,25px);color:#FAFBF7;background:var(--mata);border:1.5px solid var(--mata-tx);padding:0 8px 2px;border-radius:5px;letter-spacing:.06em;transform:rotate(-2deg);box-shadow:0 1.5px 0 rgba(20,83,45,.6),inset 0 0 0 2px rgba(250,251,247,.18);">CAR</span>
+    </a>
+    <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ openLoginGeneric }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1.5px solid var(--linha);border-radius:8px;background:var(--card);font-weight:600;font-size:15px;color:var(--tinta);" style-hover="border-color:#2D6FA6;color:#2D6FA6;">
+        <svg width="15" height="17" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="currentColor" stroke-width="1.6"/></svg>
+        Entrar com gov.br
+      </button>
+    </sc-if>
+    <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+      <div style="display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 14px;border:1.5px solid var(--linha);border-radius:999px;background:var(--card);">
+        <span style="width:28px;height:28px;border-radius:50%;background:var(--mata);color:#FAFBF7;display:grid;place-items:center;font-weight:700;font-size:13px;">JC</span>
+        <span style="font-weight:600;font-size:14px;">João C. <span style="color:var(--tinta-muda);font-weight:500;">· gov.br</span></span>
+      </div>
+    </sc-if>
+  </header>
+
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+  <nav aria-label="Seções do app" style="position:relative;z-index:4;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);background:rgba(250,251,247,.7);backdrop-filter:blur(5px);">
+    <div style="max-width:1280px;margin:0 auto;display:flex;gap:2px;padding:0 clamp(8px,4vw,40px);overflow-x:auto;">
+      <button onClick="{{ goPainel }}" aria-current="{{ tabPainel.cur }}" style="flex:0 0 auto;min-height:50px;padding:0 16px;font-size:15px;color:{{ tabPainel.color }};font-weight:{{ tabPainel.weight }};border-bottom:3px solid {{ tabPainel.border }};white-space:nowrap;" style-hover="color:#1B2018;">Painel</button>
+      <button onClick="{{ goMarket }}" aria-current="{{ tabMarket.cur }}" style="flex:0 0 auto;min-height:50px;padding:0 16px;font-size:15px;color:{{ tabMarket.color }};font-weight:{{ tabMarket.weight }};border-bottom:3px solid {{ tabMarket.border }};white-space:nowrap;" style-hover="color:#1B2018;">Marketplace</button>
+      <button onClick="{{ goAnalise }}" aria-current="{{ tabAnalise.cur }}" style="flex:0 0 auto;min-height:50px;padding:0 16px;font-size:15px;color:{{ tabAnalise.color }};font-weight:{{ tabAnalise.weight }};border-bottom:3px solid {{ tabAnalise.border }};white-space:nowrap;" style-hover="color:#1B2018;">Análise Completa</button>
+      <button onClick="{{ goCorridor }}" aria-current="{{ tabCorridor.cur }}" style="flex:0 0 auto;min-height:50px;padding:0 16px;font-size:15px;color:{{ tabCorridor.color }};font-weight:{{ tabCorridor.weight }};border-bottom:3px solid {{ tabCorridor.border }};white-space:nowrap;" style-hover="color:#1B2018;">Corredores</button>
+    </div>
+  </nav>
+  </sc-if>
+
+  <main role="main" style="position:relative;z-index:2;">
+
+    <!-- ============ SCREEN 1 · ABERTURA ============ -->
+    <sc-if value="{{ isHero }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Abertura" style="max-width:1000px;margin:0 auto;padding:clamp(20px,4vw,56px) clamp(16px,4vw,40px) 72px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.16em;color:var(--tinta-muda);text-transform:uppercase;display:inline-flex;align-items:center;gap:9px;margin-bottom:22px;">
+        <span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:var(--mata);animation:scPulse 2.4s ease-in-out infinite;"></span>
+        Cadastro Ambiental Rural · dado público
+      </span>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(34px,7.2vw,68px);line-height:1.03;letter-spacing:-.025em;margin:0;max-width:14ch;text-wrap:balance;">Sua terra está em dia com a lei ambiental?</h1>
+      <p style="font-size:clamp(18px,2.3vw,22px);line-height:1.5;color:var(--tinta-muda);max-width:34ch;margin:20px 0 0;text-wrap:pretty;">Descubra em segundos. De graça, sem cadastro, com dado público.</p>
+
+      <div style="width:100%;max-width:640px;margin-top:38px;background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:clamp(18px,3vw,26px);box-shadow:0 1px 2px rgba(27,32,24,.04),0 18px 40px -28px rgba(27,32,24,.4);text-align:left;">
+        <label for="carField" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:11px;">Informe o número do CAR</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <input id="carField" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="UF-0000000-0000.0000.0000.0000" value="{{ carInput }}" onInput="{{ onCarInput }}" onKeyDown="{{ onCarKey }}" aria-label="Número do CAR" style="flex:1 1 240px;min-width:0;min-height:58px;padding:0 16px;border:1.5px solid var(--linha);border-radius:10px;background:#fff;font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.02em;color:var(--tinta);" style-focus="border-color:#2D6FA6;">
+          <button onClick="{{ consult }}" style="flex:0 0 auto;min-height:58px;padding:0 26px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:18px;display:inline-flex;align-items:center;gap:9px;box-shadow:0 1px 0 rgba(20,83,45,.55);" style-hover="background:#196E3A;transform:translateY(-1px);">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.8"/><path d="m12.5 12.5 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Consultar
+          </button>
+        </div>
+        <button onClick="{{ consultExample }}" style="margin-top:14px;display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--agua);font-weight:600;padding:6px 2px;min-height:32px;" style-hover="text-decoration:underline;">
+          Não tem em mãos? Ver com um imóvel de exemplo
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <ul style="list-style:none;margin:34px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;">
+        <li style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-muda);background:rgba(250,251,247,.7);border:1px solid var(--linha);border-radius:999px;padding:8px 14px;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3 3 7-8" stroke="#1F8D49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Dados públicos do SICAR
+        </li>
+        <li style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-muda);background:rgba(250,251,247,.7);border:1px solid var(--linha);border-radius:999px;padding:8px 14px;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3 3 7-8" stroke="#1F8D49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cobertura real via MapBiomas
+        </li>
+        <li style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-muda);background:rgba(250,251,247,.7);border:1px solid var(--linha);border-radius:999px;padding:8px 14px;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3 3 7-8" stroke="#1F8D49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Código Florestal · Lei 12.651/2012
+        </li>
+      </ul>
+    </section>
+    </sc-if>
+
+    <!-- ============ SCREEN 2 · PAINEL (placeholder, próximo passo) ============ -->
+    <sc-if value="{{ isPainel }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Painel" style="max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px;">
+
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin-bottom:18px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:7px;">
+            <span style="display:inline-flex;align-items:center;gap:6px;color:var(--mata-tx);"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:var(--mata);"></span> Imóvel localizado</span>
+            <span aria-hidden="true">·</span>
+            <span>Bioma Cerrado</span>
+          </div>
+          <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0;line-height:1.05;">Sítio Boa Esperança</h1>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--tinta-muda);">
+            <span style="color:var(--tinta);">BA-2919926-7F3A.9C12.4E88.B0D6</span>
+            <span aria-hidden="true" style="color:var(--linha);">|</span>
+            <span>Luís Eduardo Magalhães · BA</span>
+            <span aria-hidden="true" style="color:var(--linha);">|</span>
+            <span style="color:var(--tinta);">Área: 62,59 ha</span>
+          </div>
+        </div>
+        <button onClick="{{ consultAgain }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1.5px solid var(--linha);border-radius:9px;background:var(--card);font-weight:600;font-size:14px;color:var(--tinta-muda);" style-hover="border-color:#2D6FA6;color:#2D6FA6;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Consultar outro imóvel
+        </button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(16px,2.2vw,24px);align-items:stretch;">
+
+        <!-- ===== LIVING MAP ===== -->
+        <div style="flex:2 1 480px;min-width:0;">
+          <div style="position:relative;border-radius:16px;overflow:hidden;background:var(--tinta);border:1.5px solid #2A3024;box-shadow:0 24px 50px -28px rgba(27,32,24,.7);">
+            <div style="position:absolute;top:14px;left:16px;z-index:2;display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(250,251,247,.85);">
+              <span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:var(--mata);box-shadow:0 0 0 4px rgba(31,141,73,.25);animation:scPulse 2.4s ease-in-out infinite;"></span>
+              Vista cadastral · MapBiomas 2023
+            </div>
+            <svg viewBox="0 0 1000 760" width="100%" style="display:block;height:auto" role="img" aria-label="Mapa cadastral do Sítio Boa Esperança, 62,59 hectares: área consolidada predominante em bege, hidrografia e APP em azul, Reserva Legal em verde, e um déficit de Reserva Legal de 8 hectares destacado em vermelho hachurado.">
+              <defs>
+                <clipPath id="scParcel"><polygon points="130,150 430,90 720,150 880,330 830,560 560,690 280,650 140,420"/></clipPath>
+                <pattern id="scGrid" width="58" height="58" patternUnits="userSpaceOnUse"><path d="M58 0H0V58" fill="none" stroke="#FAFBF7" stroke-width="1" opacity=".5"/></pattern>
+                <pattern id="scHatch" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="13" height="13" fill="#C8442B" opacity=".22"/><line x1="0" y1="0" x2="0" y2="13" stroke="#C8442B" stroke-width="5"/></pattern>
+              </defs>
+              <rect width="1000" height="760" fill="#1B2018"/>
+              <rect width="1000" height="760" fill="url(#scGrid)" opacity=".55"/>
+              <g clip-path="url(#scParcel)">
+                <g style="animation:scFade .55s ease both;animation-delay:.15s"><rect width="1000" height="760" fill="#E0C97F" opacity=".92"/></g>
+                <g style="animation:scFade .6s ease both;animation-delay:.95s">
+                  <polygon points="610,140 720,150 880,330 835,545 660,505 605,320" fill="#1F8D49"/>
+                  <polygon points="560,500 660,505 835,545 770,650 560,665" fill="#7DC975"/>
+                  <polygon points="410,540 470,560 560,500 560,665 420,628" fill="#D6BC74"/>
+                  <circle cx="690" cy="250" r="6" fill="#14532D" opacity=".55"/><circle cx="740" cy="320" r="7" fill="#14532D" opacity=".5"/><circle cx="660" cy="360" r="5" fill="#14532D" opacity=".55"/><circle cx="780" cy="420" r="6" fill="#14532D" opacity=".5"/><circle cx="710" cy="450" r="5" fill="#14532D" opacity=".5"/>
+                </g>
+                <g style="animation:scFade .6s ease both;animation-delay:1.25s">
+                  <polygon points="380,235 600,255 605,320 540,470 425,505 350,400 345,300" fill="url(#scHatch)" stroke="#C8442B" stroke-width="2.5"/>
+                </g>
+                <g style="animation:scFade .6s ease both;animation-delay:.6s">
+                  <path d="M430,90 C470,240 320,300 360,440 C390,560 300,620 280,650" fill="none" stroke="#2D6FA6" stroke-width="34" stroke-linecap="round" opacity=".3"/>
+                </g>
+                <g style="animation:scFade .6s ease both;animation-delay:.4s">
+                  <path d="M430,90 C470,240 320,300 360,440 C390,560 300,620 280,650" fill="none" stroke="#2D6FA6" stroke-width="6" stroke-linecap="round"/>
+                </g>
+              </g>
+
+              <!-- labels -->
+              <g style="animation:scFade .55s ease both;animation-delay:.3s"><text x="455" y="605" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="16" letter-spacing="1.5" fill="#6E5A1E">ÁREA CONSOLIDADA</text></g>
+              <g style="animation:scFade .6s ease both;animation-delay:.55s"><text x="300" y="500" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="14" fill="#BCD9EF" font-style="italic">Córrego do Sítio</text></g>
+              <g style="animation:scFade .6s ease both;animation-delay:1.05s"><text x="735" y="320" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="16" letter-spacing="1.5" fill="#EAF7EE">RESERVA LEGAL</text></g>
+              <g style="animation:scFade .6s ease both;animation-delay:1.3s"><text x="448" y="362" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="15" letter-spacing="1" fill="#FFFFFF" font-weight="600">DÉFICIT · 8 ha</text></g>
+
+              <!-- perimeter -->
+              <polygon points="130,150 430,90 720,150 880,330 830,560 560,690 280,650 140,420" fill="none" stroke="#FAFBF7" stroke-width="3" stroke-dasharray="1400" style="animation:scDraw 1s ease both"/>
+
+              <!-- north + scale -->
+              <g opacity=".7" fill="#FAFBF7"><polygon points="942,42 949,62 942,57 935,62"/><text x="942" y="78" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="14">N</text></g>
+              <g opacity=".7" stroke="#FAFBF7"><line x1="60" y1="712" x2="160" y2="712" stroke-width="2.5"/><line x1="60" y1="706" x2="60" y2="718" stroke-width="2.5"/><line x1="160" y1="706" x2="160" y2="718" stroke-width="2.5"/></g>
+              <text x="110" y="734" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="rgba(250,251,247,.7)">500 m</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ===== ASIDE READOUT ===== -->
+        <aside role="complementary" aria-label="Diagnóstico da propriedade" style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:14px;">
+
+          <!-- SELO DE CONFORMIDADE -->
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:20px 20px 22px;text-align:center;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:6px;">Selo de Conformidade</div>
+            <div style="width:188px;height:188px;margin:6px auto 4px;position:relative;display:grid;place-items:center;">
+              <div aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(201,162,39,.35);"></div>
+                <svg viewBox="0 0 200 200" width="188" height="188" style="position:relative;animation:scStamp .65s cubic-bezier(.2,.7,.3,1.5) both;animation-delay:1.45s;transform-origin:center" role="img" aria-label="Pontuação 62 de 100. Status: com pendências.">
+                  <defs>
+                    <path id="scArcTop" d="M22,100 A78,78 0 0 1 178,100"/>
+                    <path id="scArcBot" d="M30,108 A70,70 0 0 0 170,108"/>
+                  </defs>
+                  <circle cx="100" cy="100" r="92" fill="none" stroke="#C9A227" stroke-width="3"/>
+                  <circle cx="100" cy="100" r="86" fill="none" stroke="#C9A227" stroke-width="6" stroke-dasharray="2 8" opacity=".55"/>
+                  <circle cx="100" cy="100" r="79" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+                  <text font-family="'IBM Plex Mono',monospace" font-size="11.5" letter-spacing="3.5" fill="#8A6D12"><textPath href="#scArcTop" startOffset="50%" text-anchor="middle">SELO DE CONFORMIDADE</textPath></text>
+                  <text font-family="'IBM Plex Mono',monospace" font-size="9.5" letter-spacing="3" fill="#8A6D12" opacity=".8"><textPath href="#scArcBot" startOffset="50%" text-anchor="middle">CÓDIGO FLORESTAL</textPath></text>
+                  <text x="100" y="112" text-anchor="middle" font-family="'Bricolage Grotesque',sans-serif" font-weight="800" font-size="62" fill="#8A6D12">62</text>
+                  <text x="100" y="138" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="2" fill="#8A6D12" opacity=".85">DE 100</text>
+                </svg>
+            </div>
+            <div style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:7px 14px;border-radius:999px;background:rgba(201,162,39,.14);border:1.5px solid rgba(201,162,39,.5);">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5 14.5 13.5H1.5L8 2.5Z" stroke="#8A6D12" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.5v3.2" stroke="#8A6D12" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11.6" r="0.9" fill="#8A6D12"/></svg>
+              <span style="font-weight:700;font-size:16px;color:var(--valor-tx);">Com pendências</span>
+            </div>
+            <p style="margin:12px 0 0;font-size:14px;color:var(--tinta-muda);line-height:1.45;">3 itens a resolver para chegar ao selo <span style="color:var(--mata-tx);font-weight:600;">Em dia</span>.</p>
+          </div>
+
+          <!-- DIAGNÓSTICO IA -->
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:18px 18px 20px;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
+              <span style="display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:rgba(31,141,73,.12);" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8 6.4 6.4Z" fill="#1F8D49"/></svg></span>
+              <div>
+                <div style="font-weight:700;font-size:16px;line-height:1.1;">Diagnóstico</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--tinta-muda);">explicado em linguagem simples</div>
+              </div>
+            </div>
+            <p style="margin:0;font-size:18px;line-height:1.5;color:var(--tinta);text-wrap:pretty;">Falta mato equivalente a <strong style="color:var(--deficit-tx);">~8 campos de futebol</strong> na sua Reserva Legal. Para regularizar você pode recuperar a área, comprar uma cota (<button onClick="{{ openTipCra }}" style="color:var(--agua);font-weight:600;text-decoration:underline dotted;text-underline-offset:2px;padding:0;" aria-label="O que é CRA?">CRA</button>) ou alugar de um vizinho.</p>
+            <div style="margin-top:14px;padding:12px;background:rgba(31,141,73,.06);border:1px solid rgba(31,141,73,.18);border-radius:10px;">
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;" aria-hidden="true">
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+                <span style="width:30px;height:20px;border-radius:3px;border:1px solid #14532D;background:linear-gradient(90deg,#1F8D49 48%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.55) 52%,#1F8D49 52%);"></span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--mata-tx);">≈ 8 campos de futebol · 8,0 ha a recuperar</div>
+            </div>
+          </div>
+
+          <!-- HOOK: COMPENSAR -->
+          <div style="background:linear-gradient(180deg,rgba(200,68,43,.06),rgba(250,251,247,1) 60%);border:1.5px solid rgba(200,68,43,.35);border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--deficit-tx);margin-bottom:9px;">
+              <span aria-hidden="true" style="width:8px;height:8px;border-radius:2px;background:repeating-linear-gradient(45deg,#C8442B 0 3px,transparent 3px 6px);border:1px solid #C8442B;"></span>
+              Déficit de Reserva Legal
+            </div>
+            <p style="margin:0 0 14px;font-size:18px;line-height:1.45;font-weight:600;text-wrap:pretty;">Você tem <strong style="color:var(--deficit-tx);">8 ha de déficit</strong>. Compensar costuma sair bem mais barato que recompor.</p>
+            <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:16px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;margin-bottom:4px;"><span>Recompor (replantar)</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--deficit-tx);font-weight:600;">~R$ 96 mil</span></div>
+                <div style="height:8px;border-radius:4px;background:#EFE9E2;overflow:hidden;"><div style="width:100%;height:100%;background:var(--deficit);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;margin-bottom:4px;"><span>Comprar cota (<button onClick="{{ openTipCra }}" style="color:var(--agua);font-weight:600;text-decoration:underline dotted;text-underline-offset:2px;padding:0;" aria-label="O que é CRA?">CRA</button>)</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--valor-tx);font-weight:600;">~R$ 40 mil</span></div>
+                <div style="height:8px;border-radius:4px;background:#EFE9E2;overflow:hidden;"><div style="width:42%;height:100%;background:var(--valor);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;margin-bottom:4px;"><span style="display:inline-flex;align-items:center;gap:6px;">Alugar de vizinho <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;background:rgba(31,141,73,.14);color:var(--mata-tx);padding:2px 6px;border-radius:4px;">+ barato</span></span><span style="font-family:'IBM Plex Mono',monospace;color:var(--mata-tx);font-weight:600;">~R$ 6 mil/ano</span></div>
+                <div style="height:8px;border-radius:4px;background:#EFE9E2;overflow:hidden;"><div style="width:12%;height:100%;background:var(--mata);"></div></div>
+              </div>
+            </div>
+            <button onClick="{{ compensar }}" style="width:100%;min-height:52px;border-radius:10px;background:var(--deficit);color:#FFF;font-weight:700;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:9px;" style-hover="background:#A8331E;">
+              Compensar déficit
+              <span aria-hidden="true">→</span>
+            </button>
+            <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;font-size:13px;color:var(--tinta-muda);">
+                <svg width="13" height="14" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="#4A4F44" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="#4A4F44" stroke-width="1.6"/></svg>
+                Entre com gov.br para agir — o diagnóstico é livre.
+              </div>
+            </sc-if>
+          </div>
+
+          <!-- LEGENDA + PROVENIÊNCIA -->
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:16px 16px 14px;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:8px;">Cobertura do solo</div>
+            <div style="display:flex;flex-direction:column;">
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:#E0C97F;border:1px solid rgba(27,32,24,.15);"></span><span style="flex:1;font-size:15px;">Área consolidada</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta);">48,1 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--tinta-muda);width:62px;text-align:right;">declarado</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:#1F8D49;border:1px solid rgba(27,32,24,.15);"></span><span style="flex:1;font-size:15px;">Formação florestal</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta);">6,2 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--agua);width:62px;text-align:right;">● satélite</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:#7DC975;border:1px solid rgba(27,32,24,.15);"></span><span style="flex:1;font-size:15px;">Formação savânica</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta);">3,8 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--agua);width:62px;text-align:right;">● satélite</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:#D6BC74;border:1px solid rgba(27,32,24,.15);"></span><span style="flex:1;font-size:15px;">Campo</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta);">2,1 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--agua);width:62px;text-align:right;">● satélite</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:#2D6FA6;border:1px solid rgba(27,32,24,.15);"></span><span style="flex:1;font-size:15px;">Água / APP</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta);">2,4 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--agua);width:62px;text-align:right;">● satélite</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;border-top:1px dashed var(--linha);margin-top:2px;" style-hover="background:#EFF1EB;"><span aria-hidden="true" style="flex:none;width:16px;height:16px;border-radius:4px;background:repeating-linear-gradient(45deg,#C8442B 0 3px,#F5DAD3 3px 6px);border:1px solid #C8442B;"></span><span style="flex:1;font-size:15px;color:var(--deficit-tx);font-weight:600;">Déficit de RL</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--deficit-tx);">8,0 ha</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--deficit-tx);width:62px;text-align:right;">calculado</span></div>
+            </div>
+            <p style="margin:10px 6px 0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.5;color:var(--tinta-muda);"><strong style="color:var(--tinta);">declarado</strong> = informado no CAR · <strong style="color:var(--agua);">● satélite</strong> = MapBiomas 2023 · <strong style="color:var(--deficit-tx);">calculado</strong> = Lei 12.651</p>
+          </div>
+
+          <!-- AÇÕES OFICIAIS (gated) -->
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:10px;">Ir além do diagnóstico</div>
+            <button onClick="{{ verPendencias }}" style="width:100%;display:flex;align-items:center;gap:11px;min-height:52px;padding:0 14px;border:1.5px solid var(--linha);border-radius:10px;background:#fff;text-align:left;margin-bottom:9px;" style-hover="border-color:#4A4F44;">
+              <span style="flex:1;font-weight:600;font-size:15px;">Ver pendências oficiais</span>
+              <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}"><svg width="15" height="17" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="#4A4F44" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="#4A4F44" stroke-width="1.6"/></svg></sc-if>
+              <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="color:var(--tinta-muda);">→</span></sc-if>
+            </button>
+            <button onClick="{{ gerarRetificacao }}" style="width:100%;display:flex;align-items:center;gap:11px;min-height:52px;padding:0 14px;border:1.5px solid var(--linha);border-radius:10px;background:#fff;text-align:left;margin-bottom:12px;" style-hover="border-color:#4A4F44;">
+              <span style="flex:1;font-weight:600;font-size:15px;">Gerar retificação do CAR</span>
+              <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}"><svg width="15" height="17" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="#4A4F44" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="#4A4F44" stroke-width="1.6"/></svg></sc-if>
+              <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="color:var(--tinta-muda);">→</span></sc-if>
+            </button>
+            <button onClick="{{ goAnalise }}" style="width:100%;min-height:50px;border-radius:10px;background:var(--tinta);color:var(--papel);font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:9px;" style-hover="background:#000;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 11V3M8 3 5 6M8 3l3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11v1.5A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5V11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Enviar arquivo .CAR completo
+            </button>
+            <p style="margin:9px 2px 0;font-size:12.5px;line-height:1.45;color:var(--tinta-muda);">Pendências e retificação usam o arquivo completo do imóvel.</p>
+          </div>
+
+        </aside>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ============ SCREEN 3 · MARKETPLACE ============ -->
+    <sc-if value="{{ isMarket }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Marketplace" style="max-width:1180px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px;">
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0;line-height:1.05;">Marketplace de reserva</h1>
+      <p style="margin:10px 0 0;font-size:18px;line-height:1.5;color:var(--tinta-muda);max-width:54ch;">Compense seu déficit comprando uma cota ou alugando a reserva de um vizinho — ou anuncie seu excedente.</p>
+
+      <div style="display:flex;align-items:flex-start;gap:11px;margin:18px 0 20px;padding:13px 15px;background:rgba(200,68,43,.07);border:1.5px solid rgba(200,68,43,.3);border-radius:12px;">
+        <span aria-hidden="true" style="flex:none;width:18px;height:18px;border-radius:3px;margin-top:1px;background:repeating-linear-gradient(45deg,#C8442B 0 3px,#F5DAD3 3px 6px);border:1px solid #C8442B;"></span>
+        <p style="margin:0;font-size:15px;line-height:1.45;color:var(--tinta);">Seu imóvel tem <strong style="color:var(--deficit-tx);">déficit de 8 ha no Cerrado</strong>. Ofertas do mesmo bioma podem <strong>casar</strong> com ele.</p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin-bottom:8px;">
+        <div role="group" aria-label="Tipo de oferta" style="display:inline-flex;background:#EFF1EB;border:1.5px solid var(--linha);border-radius:10px;padding:3px;gap:2px;">
+          <button onClick="{{ setFTudo }}" style="min-height:42px;padding:0 16px;border-radius:8px;font-weight:600;font-size:15px;background:{{ fTudo.bg }};color:{{ fTudo.color }};">Tudo</button>
+          <button onClick="{{ setFVenda }}" style="min-height:42px;padding:0 15px;border-radius:8px;font-weight:600;font-size:15px;background:{{ fVenda.bg }};color:{{ fVenda.color }};display:inline-flex;align-items:center;gap:7px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8.5 8 2.5l6 6-5.5 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="6" r="1.1" fill="currentColor"/></svg>Venda (CRA)</button>
+          <button onClick="{{ setFAluguel }}" style="min-height:42px;padding:0 15px;border-radius:8px;font-weight:600;font-size:15px;background:{{ fAluguel.bg }};color:{{ fAluguel.color }};display:inline-flex;align-items:center;gap:7px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.2l2 1.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Aluguel</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-muda);margin-right:2px;">Bioma</span>
+          <button onClick="{{ setBTodos }}" style="min-height:40px;padding:0 13px;border-radius:999px;font-size:14px;border:1.5px solid {{ bTodos.border }};background:{{ bTodos.bg }};color:{{ bTodos.color }};font-weight:{{ bTodos.weight }};">Todos</button>
+          <button onClick="{{ setBCerrado }}" style="min-height:40px;padding:0 13px;border-radius:999px;font-size:14px;border:1.5px solid {{ bCerrado.border }};background:{{ bCerrado.bg }};color:{{ bCerrado.color }};font-weight:{{ bCerrado.weight }};">Cerrado</button>
+          <button onClick="{{ setBAmazonia }}" style="min-height:40px;padding:0 13px;border-radius:999px;font-size:14px;border:1.5px solid {{ bAmazonia.border }};background:{{ bAmazonia.bg }};color:{{ bAmazonia.color }};font-weight:{{ bAmazonia.weight }};">Amazônia</button>
+          <button onClick="{{ setBMata }}" style="min-height:40px;padding:0 13px;border-radius:999px;font-size:14px;border:1.5px solid {{ bMata.border }};background:{{ bMata.bg }};color:{{ bMata.color }};font-weight:{{ bMata.weight }};">Mata Atlântica</button>
+        </div>
+      </div>
+      <p aria-live="polite" style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-muda);margin:0 0 16px;">{{ offerCount }} ofertas encontradas</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:14px;">
+        <sc-for list="{{ offers }}" as="offer" hint-placeholder-count="4">
+          <article style="background:var(--card);border:1.5px solid var(--linha);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <sc-if value="{{ offer.isVenda }}" hint-placeholder-val="{{ true }}"><div style="height:4px;background:var(--valor);"></div></sc-if>
+            <sc-if value="{{ offer.isAluguel }}" hint-placeholder-val="{{ false }}"><div style="height:4px;background:var(--agua);"></div></sc-if>
+            <div style="padding:15px 15px 16px;display:flex;flex-direction:column;gap:11px;flex:1;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-muda);">{{ offer.bioma }}</span>
+                <sc-if value="{{ offer.isVenda }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--valor-tx);background:rgba(201,162,39,.14);border-radius:6px;padding:4px 9px;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8.5 8 2.5l6 6-5.5 5.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="10" cy="6" r="1.1" fill="currentColor"/></svg>Venda · CRA</span></sc-if>
+                <sc-if value="{{ offer.isAluguel }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--agua);background:rgba(45,111,166,.13);border-radius:6px;padding:4px 9px;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M8 5v3.2l2 1.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Aluguel</span></sc-if>
+              </div>
+              <div>
+                <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:30px;letter-spacing:-.02em;line-height:1;">{{ offer.area }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--valor-tx);font-weight:600;margin-top:5px;">{{ offer.valor }}{{ offer.unit }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--tinta-muda);">
+                <span>{{ offer.local }} · {{ offer.dist }}</span>
+                <sc-if value="{{ offer.hasPrazo }}" hint-placeholder-val="{{ false }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;">prazo: {{ offer.prazo }}</span></sc-if>
+              </div>
+              <div style="margin-top:auto;padding-top:4px;">
+                <sc-if value="{{ offer.compativel }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ offer.onCasar }}" style="width:100%;min-height:46px;border-radius:9px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;" style-hover="background:#196E3A;">
+                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 15s-6-3.7-6-8a3.3 3.3 0 0 1 6-1.9A3.3 3.3 0 0 1 15 7c0 4.3-6 8-6 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                    Casar com meu déficit
+                  </button>
+                </sc-if>
+                <sc-if value="{{ offer.naoCompativel }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:7px;min-height:46px;justify-content:center;font-size:13px;color:var(--tinta-muda);border:1.5px dashed var(--linha);border-radius:9px;">Bioma diferente do seu déficit</div>
+                </sc-if>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ offersEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:48px 24px;border:1.5px dashed var(--linha);border-radius:16px;background:rgba(250,251,247,.6);">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;margin-bottom:8px;">Nenhuma oferta nesse filtro ainda</div>
+        <p style="margin:0 auto 18px;max-width:42ch;font-size:16px;line-height:1.5;color:var(--tinta-muda);">Anuncie seu excedente e seja o primeiro do seu bioma — quem tem déficit vai te encontrar.</p>
+        <button onClick="{{ anunciar }}" style="min-height:50px;padding:0 22px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:16px;" style-hover="background:#196E3A;">Anunciar excedente</button>
+      </div>
+      </sc-if>
+    </section>
+    </sc-if>
+
+    <!-- ============ SCREEN 4 · ANÁLISE COMPLETA ============ -->
+    <sc-if value="{{ isAnalise }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Análise Completa" style="max-width:1100px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--valor-tx);background:rgba(201,162,39,.14);border-radius:999px;padding:6px 13px;margin-bottom:14px;">★ Análise Completa</div>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0;line-height:1.05;">Envie o arquivo .CAR completo</h1>
+      <p style="margin:10px 0 24px;font-size:18px;line-height:1.5;color:var(--tinta-muda);max-width:58ch;">A consulta pública já te deu o diagnóstico. Com o arquivo completo, mostramos as <strong style="color:var(--tinta);">pendências oficiais</strong> e geramos a <strong style="color:var(--tinta);">retificação</strong>.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(16px,2.4vw,28px);align-items:flex-start;">
+        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px;">
+          <div style="background:rgba(45,111,166,.06);border:1.5px solid rgba(45,111,166,.28);border-radius:14px;padding:16px 18px;">
+            <div style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;margin-bottom:8px;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="#2D6FA6" stroke-width="1.6"/><path d="M9 8v4" stroke="#2D6FA6" stroke-width="1.7" stroke-linecap="round"/><circle cx="9" cy="5.6" r="1" fill="#2D6FA6"/></svg>Por que o arquivo completo?</div>
+            <p style="margin:0;font-size:15.5px;line-height:1.55;color:var(--tinta-muda);">Ele traz a <strong style="color:var(--agua);">etapa Geo</strong> — os polígonos da sua Reserva Legal e das APPs. O demonstrativo simplificado (PDF) não tem essa geometria, então não dá para calcular pendências nem retificar.</p>
+          </div>
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:14px;padding:16px 18px 18px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-muda);margin-bottom:14px;">Como obter na Central do Proprietário</div>
+            <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:step;">
+              <li style="display:flex;gap:12px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--tinta);color:var(--papel);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">1</span><span style="font-size:15.5px;line-height:1.45;">Acesse a Central do Proprietário no SICAR e entre com <strong>gov.br</strong>.</span></li>
+              <li style="display:flex;gap:12px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--tinta);color:var(--papel);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">2</span><span style="font-size:15.5px;line-height:1.45;">Selecione o imóvel e clique em <strong>Baixar</strong>.</span></li>
+              <li style="display:flex;gap:12px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--tinta);color:var(--papel);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">3</span><span style="font-size:15.5px;line-height:1.45;">Baixe o arquivo <strong>completo (.car)</strong> — não o PDF simplificado.</span></li>
+              <li style="display:flex;gap:12px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--mata);color:var(--papel);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">4</span><span style="font-size:15.5px;line-height:1.45;">Volte aqui e <strong>envie o arquivo</strong> ao lado.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div style="flex:1 1 320px;min-width:0;">
+          <sc-if value="{{ uploadIdle }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ startUpload }}" onDrop="{{ onDrop }}" onDragOver="{{ onDragOver }}" style="width:100%;min-height:300px;border:2px dashed var(--linha);border-radius:16px;background:rgba(250,251,247,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;" style-hover="border-color:#1F8D49;background:rgba(31,141,73,.05);">
+              <span aria-hidden="true" style="width:56px;height:56px;border-radius:14px;background:rgba(31,141,73,.12);display:grid;place-items:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 16V5M12 5 8 9m4-4 4 4" stroke="#1F8D49" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16" stroke="#1F8D49" stroke-width="1.9" stroke-linecap="round"/></svg></span>
+              <span style="font-weight:700;font-size:18px;color:var(--tinta);">Arraste o arquivo .CAR aqui</span>
+              <span style="font-size:15px;color:var(--tinta-muda);">ou toque para selecionar</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tinta-muda);margin-top:4px;">.car · até 50 MB</span>
+            </button>
+          </sc-if>
+          <sc-if value="{{ uploadingNow }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="width:100%;min-height:300px;border:1.5px solid var(--linha);border-radius:16px;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center;">
+              <span aria-hidden="true" style="width:44px;height:44px;border-radius:50%;border:3.5px solid var(--linha);border-top-color:var(--mata);animation:scSpin .8s linear infinite;"></span>
+              <span style="font-weight:600;font-size:16px;">Lendo a geometria (RL e APP)…</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--tinta-muda);">imovel_completo.car · 3,4 MB</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ uploadDone }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:18px;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3 3 7-8" stroke="#1F8D49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-weight:700;font-size:16px;">Arquivo lido · 3 itens analisados</span></div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;border-radius:10px;background:rgba(200,68,43,.07);border:1px solid rgba(200,68,43,.25);"><span aria-hidden="true" style="flex:none;width:22px;height:22px;border-radius:6px;background:var(--deficit);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;">!</span><div><div style="font-weight:600;font-size:15px;color:var(--deficit-tx);">Reserva Legal abaixo do mínimo</div><div style="font-size:13.5px;color:var(--tinta-muda);line-height:1.4;">Déficit de 8,0 ha (Cerrado exige 20%).</div></div></div>
+                <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;border-radius:10px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.35);"><span aria-hidden="true" style="flex:none;width:22px;height:22px;border-radius:6px;background:var(--valor);color:#3a2e08;display:grid;place-items:center;font-weight:700;font-size:13px;">!</span><div><div style="font-weight:600;font-size:15px;color:var(--valor-tx);">APP do córrego sem recomposição</div><div style="font-size:13.5px;color:var(--tinta-muda);line-height:1.4;">1,2 ha de faixa de proteção a recompor.</div></div></div>
+                <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;border-radius:10px;background:rgba(31,141,73,.08);border:1px solid rgba(31,141,73,.25);"><span aria-hidden="true" style="flex:none;width:22px;height:22px;border-radius:6px;background:var(--mata);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;">✓</span><div><div style="font-weight:600;font-size:15px;color:var(--mata-tx);">Sem sobreposição com embargo</div><div style="font-size:13.5px;color:var(--tinta-muda);line-height:1.4;">Nenhuma área embargada detectada.</div></div></div>
+              </div>
+              <sc-if value="{{ retDone }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#F4F6F2;border:1px solid var(--linha);border-radius:11px;padding:14px;">
+                  <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3 3 7-8" stroke="#1F8D49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Minuta de retificação gerada</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--tinta-muda);border-left:2px solid var(--mata);padding-left:10px;margin-bottom:12px;">retificacao_BA-2919926.pdf<br>RL proposta: 12,5 ha · APP: +1,2 ha<br>compensação: CRA 8,0 ha (Barreiras/BA)</div>
+                  <button style="width:100%;min-height:48px;border-radius:9px;background:var(--tinta);color:var(--papel);font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;" style-hover="background:#000;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0L5 7m3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12v1.5h10V12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Baixar minuta (.pdf)</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ retPending }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ genRet }}" style="width:100%;min-height:52px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:9px;" style-hover="background:#196E3A;">
+                  Gerar retificação do CAR
+                  <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}"><svg width="14" height="16" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="currentColor" stroke-width="1.6"/></svg></sc-if>
+                </button>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ============ CHERRY · CORREDORES (impacto coletivo) ============ -->
+    <sc-if value="{{ isCorridor }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Corredores" style="max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--mata-tx);background:rgba(31,141,73,.12);border-radius:999px;padding:6px 13px;margin-bottom:14px;">Impacto coletivo</div>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0;line-height:1.05;max-width:18ch;">Cada pareamento puxa um corredor de mata</h1>
+      <p style="margin:10px 0 22px;font-size:18px;line-height:1.5;color:var(--tinta-muda);max-width:60ch;">Quando vizinhos casam déficit e excedente, a recomposição é empurrada para onde <strong style="color:var(--tinta);">conecta fragmentos</strong> — formando corredores por onde a fauna volta a circular.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(16px,2.2vw,24px);align-items:stretch;">
+        <div style="flex:2 1 460px;min-width:0;">
+          <div style="position:relative;border-radius:16px;overflow:hidden;background:var(--tinta);border:1.5px solid #2A3024;box-shadow:0 24px 50px -28px rgba(27,32,24,.7);">
+            <div style="position:absolute;top:14px;left:16px;z-index:2;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(250,251,247,.85);">Oeste da Bahia · Cerrado</div>
+            <svg viewBox="0 0 1000 620" width="100%" style="display:block;height:auto" role="img" aria-label="Mapa regional do Oeste da Bahia mostrando propriedades conectadas: patches de mata nativa em verde formando um corredor de 18 km ao longo do rio, propriedades com déficit em vermelho hachurado direcionando sua compensação para fechar o corredor, e o Sítio Boa Esperança destacado na rede.">
+              <defs>
+                <pattern id="scGrid2" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#FAFBF7" stroke-width="1" opacity=".5"/></pattern>
+                <pattern id="scHatch2" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="13" height="13" fill="#C8442B" opacity=".22"/><line x1="0" y1="0" x2="0" y2="13" stroke="#C8442B" stroke-width="5"/></pattern>
+              </defs>
+              <rect width="1000" height="620" fill="#1B2018"/>
+              <rect width="1000" height="620" fill="url(#scGrid2)" opacity=".5"/>
+              <!-- corridor ribbon -->
+              <path d="M120,235 C320,150 500,300 700,250 C800,225 880,300 920,300" fill="none" stroke="#1F8D49" stroke-width="58" stroke-linecap="round" opacity=".22" style="animation:scFade .8s ease both"/>
+              <!-- river -->
+              <path d="M80,120 C260,200 220,360 420,420 C600,470 640,560 900,540" fill="none" stroke="#2D6FA6" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+              <!-- compensation links (deficit -> corridor) -->
+              <g style="animation:scFade .6s ease both;animation-delay:.5s">
+                <path d="M345,330 L360,270" stroke="#7DC975" stroke-width="2.5" stroke-dasharray="4 5" fill="none"/><polygon points="360,262 355,274 366,272" fill="#7DC975"/>
+                <path d="M605,330 L640,272" stroke="#7DC975" stroke-width="2.5" stroke-dasharray="4 5" fill="none"/><polygon points="643,264 635,275 646,277" fill="#7DC975"/>
+              </g>
+              <!-- conserved / corridor parcels -->
+              <g style="animation:scFade .6s ease both;animation-delay:.15s">
+                <polygon points="120,185 215,168 228,240 133,258" fill="#1F8D49"/>
+                <polygon points="252,158 348,148 358,216 262,228" fill="#7DC975"/>
+                <polygon points="512,178 602,172 612,242 520,250" fill="#1F8D49"/>
+                <polygon points="640,214 732,208 742,280 650,288" fill="#7DC975"/>
+                <polygon points="772,256 862,256 868,326 778,328" fill="#1F8D49"/>
+              </g>
+              <!-- deficit parcels -->
+              <g style="animation:scFade .6s ease both;animation-delay:.35s">
+                <polygon points="300,335 392,335 400,405 307,409" fill="url(#scHatch2)" stroke="#C8442B" stroke-width="2"/>
+                <polygon points="560,335 652,335 660,406 568,410" fill="url(#scHatch2)" stroke="#C8442B" stroke-width="2"/>
+              </g>
+              <!-- neutral parcels -->
+              <polygon points="170,365 256,365 263,428 177,431" fill="#E0C97F" opacity=".55"/>
+              <polygon points="700,366 792,366 799,432 706,434" fill="#E0C97F" opacity=".55"/>
+              <!-- YOUR property -->
+              <g style="animation:scFade .6s ease both;animation-delay:.7s">
+                <polygon points="382,202 472,196 481,270 390,278" fill="#1F8D49" stroke="#FAFBF7" stroke-width="3"/>
+                <circle cx="430" cy="172" r="5" fill="#FAFBF7"/>
+                <text x="430" y="160" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="14" font-weight="600" letter-spacing=".5" fill="#FAFBF7">SEU IMÓVEL</text>
+              </g>
+              <text x="350" y="445" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#E9B7AC">déficit recompõe aqui ↑</text>
+            </svg>
+          </div>
+        </div>
+
+        <aside style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:14px;">
+          <div style="background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(27,32,24,.04);">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(44px,7vw,60px);letter-spacing:-.03em;line-height:.95;color:var(--mata-tx);">18 km</div>
+            <div style="font-size:16px;color:var(--tinta-muda);margin-top:4px;">de corredor contínuo de mata nativa nesta microbacia.</div>
+            <div style="display:flex;gap:10px;margin-top:18px;">
+              <div style="flex:1;background:rgba(31,141,73,.08);border-radius:11px;padding:12px;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:24px;">34</div><div style="font-size:12.5px;color:var(--tinta-muda);line-height:1.3;">pareamentos fechados</div></div>
+              <div style="flex:1;background:rgba(31,141,73,.08);border-radius:11px;padding:12px;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:24px;">1.240 ha</div><div style="font-size:12.5px;color:var(--tinta-muda);line-height:1.3;">recompostos onde conectam</div></div>
+            </div>
+          </div>
+          <div style="background:rgba(31,141,73,.06);border:1.5px solid rgba(31,141,73,.3);border-radius:16px;padding:18px;">
+            <div style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;margin-bottom:8px;"><span style="width:14px;height:14px;border-radius:4px;background:#1F8D49;border:2px solid #FAFBF7;box-shadow:0 0 0 1px #1F8D49;" aria-hidden="true"></span>Seu pareamento</div>
+            <p style="margin:0;font-size:15.5px;line-height:1.55;color:var(--tinta);">Casar seu déficit com a reserva vizinha em Barreiras fecha um trecho de <strong style="color:var(--mata-tx);">1,9 km</strong> entre dois fragmentos — recomposição vira conexão, não mancha isolada.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:16px;">
+            <div style="display:flex;align-items:center;gap:9px;font-size:14px;"><span aria-hidden="true" style="width:14px;height:14px;border-radius:4px;background:#1F8D49;"></span>Mata conectada (corredor)</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:14px;"><span aria-hidden="true" style="width:14px;height:14px;border-radius:4px;background:repeating-linear-gradient(45deg,#C8442B 0 3px,#F5DAD3 3px 6px);border:1px solid #C8442B;"></span>Déficit direcionado ao corredor</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:14px;"><span aria-hidden="true" style="width:14px;height:14px;border-radius:4px;background:#2D6FA6;"></span>Hidrografia (eixo do corredor)</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+    </sc-if>
+
+  </main>
+
+  <!-- ============ CONSULTA LOADER ============ -->
+  <sc-if value="{{ consulting }}" hint-placeholder-val="{{ false }}">
+  <div role="status" aria-live="polite" style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(27,32,24,.62);backdrop-filter:blur(3px);padding:24px;">
+    <div style="background:var(--card);border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);">
+      <div aria-hidden="true" style="width:42px;height:42px;border-radius:50%;border:3.5px solid var(--linha);border-top-color:var(--mata);animation:scSpin .8s linear infinite;"></div>
+      <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--tinta);">Consultando dados públicos…</p>
+      <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--tinta-muda);text-transform:uppercase;">SICAR · MapBiomas</p>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ gov.br LOGIN ============ -->
+  <sc-if value="{{ loginOpen }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-modal="true" aria-label="Entrar com gov.br" style="position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(27,32,24,.62);backdrop-filter:blur(3px);padding:20px;">
+    <div style="width:100%;max-width:412px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 30px 70px -20px rgba(0,0,0,.55);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--linha);background:#F4F6F2;">
+        <span aria-hidden="true" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.02em;"><span style="color:#1351B4;">gov</span><span style="color:#1351B4;">.br</span></span>
+        <button onClick="{{ closeLogin }}" aria-label="Fechar" style="width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:var(--tinta-muda);" style-hover="background:#EFF1EB;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div style="padding:26px 24px 28px;">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:23px;letter-spacing:-.02em;margin:0 0 8px;">Entrar com gov.br</h2>
+        <p style="margin:0 0 22px;font-size:16px;line-height:1.5;color:var(--tinta-muda);">{{ loginPendingText }}</p>
+        <button onClick="{{ doLogin }}" style="width:100%;min-height:54px;border-radius:10px;background:#1351B4;color:#fff;font-weight:700;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:10px;" style-hover="background:#0E3F8C;">
+          <sc-if value="{{ loginLoading }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:scSpin .7s linear infinite;"></span> Entrando…</sc-if>
+          <sc-if value="{{ loginIdle }}" hint-placeholder-val="{{ true }}">Entrar com gov.br</sc-if>
+        </button>
+        <div style="display:flex;align-items:center;gap:9px;margin-top:18px;padding:11px 13px;background:#F4F6F2;border-radius:9px;">
+          <svg width="16" height="18" viewBox="0 0 15 17" fill="none" aria-hidden="true" style="flex:none"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="#4A4F44" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="#4A4F44" stroke-width="1.6"/></svg>
+          <span style="font-size:13.5px;line-height:1.45;color:var(--tinta-muda);">A mesma conta que você já usa no SICAR. Não criamos cadastro novo.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ TOOLTIP / JARGÃO ============ -->
+  <sc-if value="{{ tipOpen }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-modal="true" aria-label="Explicação do termo" onClick="{{ closeTip }}" style="position:fixed;inset:0;z-index:75;display:flex;align-items:flex-end;justify-content:center;background:rgba(27,32,24,.5);backdrop-filter:blur(2px);">
+    <div onClick="{{ stopProp }}" style="width:100%;max-width:480px;background:#fff;border-radius:18px 18px 0 0;padding:22px 22px 26px;box-shadow:0 -12px 40px rgba(0,0,0,.3);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0;">{{ tipTerm }}</h2>
+        <button onClick="{{ closeTip }}" aria-label="Fechar" style="flex:none;width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:var(--tinta-muda);margin:-6px -6px 0 0;" style-hover="background:#EFF1EB;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      </div>
+      <p style="margin:12px 0 18px;font-size:17px;line-height:1.55;color:var(--tinta-muda);">{{ tipText }}</p>
+      <button onClick="{{ closeTip }}" style="width:100%;min-height:50px;border-radius:10px;background:var(--tinta);color:var(--papel);font-weight:600;font-size:16px;" style-hover="background:#000;">Entendi</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ CASAR / PAREAMENTO ============ -->
+  <sc-if value="{{ matchOpen }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-modal="true" aria-label="Casar pareamento" onClick="{{ closeMatch }}" style="position:fixed;inset:0;z-index:78;display:grid;place-items:center;background:rgba(27,32,24,.62);backdrop-filter:blur(3px);padding:18px;">
+    <div onClick="{{ stopProp }}" style="width:100%;max-width:486px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px -20px rgba(0,0,0,.55);">
+      <sc-if value="{{ matchPending }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:24px 22px 26px;">
+          <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:23px;letter-spacing:-.02em;margin:0 0 4px;">Casar pareamento</h2>
+          <p style="margin:0 0 18px;font-size:15.5px;line-height:1.5;color:var(--tinta-muda);">Os dois lados saem ganhando:</p>
+          <div style="display:flex;align-items:stretch;gap:10px;">
+            <div style="flex:1;background:rgba(31,141,73,.08);border:1.5px solid rgba(31,141,73,.3);border-radius:12px;padding:13px;">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mata-tx);margin-bottom:6px;">Você</div>
+              <div style="font-weight:700;font-size:15px;line-height:1.2;margin-bottom:8px;">Sítio Boa Esperança</div>
+              <div style="font-size:13.5px;line-height:1.45;color:var(--tinta);">Cobre o déficit de <strong>8 ha</strong> e o selo vira <strong style="color:var(--mata-tx);">Em dia</strong>.</div>
+            </div>
+            <div style="flex:none;display:grid;place-items:center;color:var(--tinta-muda);" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 8h13m0 0-3-3m3 3-3 3M19 14H6m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1;background:rgba(201,162,39,.1);border:1.5px solid rgba(201,162,39,.4);border-radius:12px;padding:13px;">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--valor-tx);margin-bottom:6px;">Vizinho</div>
+              <div style="font-weight:700;font-size:15px;line-height:1.2;margin-bottom:8px;">{{ matchArea }} · {{ matchTipoLabel }}</div>
+              <div style="font-size:13.5px;line-height:1.45;color:var(--tinta);">Recebe <strong style="color:var(--valor-tx);">{{ matchValor }}</strong> pela reserva preservada em {{ matchLocal }}.</div>
+            </div>
+          </div>
+          <button onClick="{{ confirmMatch }}" style="width:100%;min-height:54px;margin-top:18px;border-radius:10px;background:#1351B4;color:#fff;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:9px;" style-hover="background:#0E3F8C;">
+            <svg width="16" height="18" viewBox="0 0 15 17" fill="none" aria-hidden="true"><rect x="1.5" y="7" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M4 7V4.5a3.5 3.5 0 1 1 7 0V7" stroke="currentColor" stroke-width="1.6"/></svg>
+            Confirmar e assinar com gov.br
+          </button>
+          <button onClick="{{ closeMatch }}" style="width:100%;min-height:46px;margin-top:8px;border-radius:10px;color:var(--tinta-muda);font-weight:600;font-size:15px;" style-hover="background:#EFF1EB;">Agora não</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ matchDone }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:30px 24px 26px;text-align:center;">
+          <div aria-hidden="true" style="width:60px;height:60px;border-radius:50%;background:rgba(31,141,73,.14);display:grid;place-items:center;margin:0 auto 14px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-11" stroke="#1F8D49" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:23px;letter-spacing:-.02em;margin:0 0 8px;">Pareamento solicitado!</h2>
+          <p style="margin:0 0 18px;font-size:16px;line-height:1.5;color:var(--tinta-muda);">Enviamos o contrato para o vizinho. Quando ele assinar, sua Reserva Legal fica regularizada.</p>
+          <div style="text-align:left;background:#F4F6F2;border:1px solid var(--linha);border-radius:10px;padding:13px 14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--tinta-muda);">
+            <div style="border-bottom:1px dashed var(--linha);padding-bottom:7px;margin-bottom:7px;color:var(--tinta);">CONTRATO DE COMPENSAÇÃO · CRA</div>
+            ✓ Assinado eletronicamente via <strong style="color:#1351B4;">gov.br</strong><br>João C. · CPF •••.123.456-•• · 26/06/2026 14:32
+          </div>
+          <button onClick="{{ closeMatch }}" style="width:100%;min-height:52px;margin-top:18px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:16px;" style-hover="background:#196E3A;">Concluir</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen: 'hero',
+    viewport: 'desktop',
+    carInput: '',
+    consulting: false,
+    ignite: 0,
+    reduce: false,
+    loggedIn: false,
+    loginOpen: false,
+    loginPending: null,
+    loginLoading: false,
+    tip: null,
+    mkFilter: 'todos',
+    mkBioma: 'todos',
+    matchOpen: false,
+    matchOffer: null,
+    matchDone: false,
+    pendingOffer: null,
+    uploadState: 'idle',
+    retDone: false,
+  };
+
+  componentDidMount() {
+    this._timers = [];
+    this._onResize = () => {
+      const mob = window.innerWidth < 860;
+      if ((this.state.viewport === 'mobile') !== mob) this.setState({ viewport: mob ? 'mobile' : 'desktop' });
+    };
+    this.setState({ viewport: window.innerWidth < 860 ? 'mobile' : 'desktop' });
+    window.addEventListener('resize', this._onResize);
+    const rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (rm) this.setState({ reduce: rm.matches });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    (this._timers || []).forEach(clearTimeout);
+  }
+  _t(fn, ms) { const id = setTimeout(fn, ms); (this._timers = this._timers || []).push(id); return id; }
+
+  goHome() { this.setState({ screen: 'hero' }); }
+  go(screen) { this.setState({ screen }); window.scrollTo && window.scrollTo(0, 0); }
+
+  consult() {
+    if (this.state.consulting) return;
+    this.setState({ consulting: true });
+    this._t(() => { this.setState({ consulting: false, screen: 'painel' }); }, 1100);
+  }
+  consultExample() {
+    this.setState({ carInput: 'BA-2919926-7F3A.9C12.4E88.B0D6' });
+    this.consult();
+  }
+  startIgnite() {
+    (this._timers || []).forEach(clearTimeout); this._timers = [];
+    if (this.state.reduce) { this.setState({ ignite: 6 }); return; }
+    this.setState({ ignite: 0 });
+    [1, 2, 3, 4, 5, 6].forEach((s, i) => this._t(() => this.setState({ ignite: s }), 200 + i * 210));
+  }
+
+  openTip(key) { this.setState({ tip: key }); }
+  closeTip() { this.setState({ tip: null }); }
+  tipInfo(key) {
+    return ({
+      cra: { term: 'CRA — Cota de Reserva Ambiental', text: 'Um título que representa uma área de vegetação nativa preservada além do exigido. Quem tem déficit de Reserva Legal pode comprar uma CRA para compensar, em vez de plantar tudo de novo.' },
+      mf: { term: 'Módulo fiscal', text: 'Unidade de medida agrária que muda de município para município. Define o porte do imóvel e algumas regras ambientais. Aqui, 1 módulo ≈ 20 hectares.' },
+      arrendamento: { term: 'Arrendamento de reserva', text: 'Você aluga a área de reserva de um vizinho por um prazo, em vez de comprar. Costuma ser a forma mais barata de cobrir o déficit no curto prazo.' },
+    })[key] || { term: '', text: '' };
+  }
+  setFilter(f) { this.setState({ mkFilter: f }); }
+  setBioma(b) { this.setState({ mkBioma: b }); }
+  baseOffers() {
+    return [
+      { id: 2, bioma: 'Cerrado', area: '8,0 ha', tipo: 'aluguel', valor: 'R$ 5,8 mil', unit: '/ano', prazo: '20 anos', local: 'Barreiras · BA', dist: '31 km' },
+      { id: 1, bioma: 'Cerrado', area: '9,2 ha', tipo: 'venda', valor: 'R$ 38 mil', unit: '', prazo: '', local: 'Riachão das Neves · BA', dist: '42 km' },
+      { id: 4, bioma: 'Cerrado', area: '6,5 ha', tipo: 'aluguel', valor: 'R$ 4,9 mil', unit: '/ano', prazo: '15 anos', local: 'São Desidério · BA', dist: '55 km' },
+      { id: 3, bioma: 'Cerrado', area: '15,4 ha', tipo: 'venda', valor: 'R$ 61 mil', unit: '', prazo: '', local: 'Formosa do Rio Preto · BA', dist: '78 km' },
+      { id: 5, bioma: 'Amazônia', area: '40,0 ha', tipo: 'venda', valor: 'R$ 120 mil', unit: '', prazo: '', local: 'Novo Progresso · PA', dist: '1.900 km' },
+      { id: 6, bioma: 'Mata Atlântica', area: '12,0 ha', tipo: 'aluguel', valor: 'R$ 9 mil', unit: '/ano', prazo: '10 anos', local: 'Sorocaba · SP', dist: '2.100 km' },
+    ];
+  }
+  casar(offer) {
+    if (!this.state.loggedIn) { this.setState({ pendingOffer: offer }); this.openLogin('casar'); return; }
+    this.setState({ matchOpen: true, matchOffer: offer, matchDone: false });
+  }
+  closeMatch() { this.setState({ matchOpen: false, matchDone: false }); }
+  confirmMatch() { this.setState({ matchDone: true }); }
+  startUpload() { if (this.state.uploadState !== 'idle') return; this.setState({ uploadState: 'uploading' }); this._t(() => this.setState({ uploadState: 'done' }), 1700); }
+  genRet() { if (!this.state.loggedIn) { this.openLogin('retificar'); return; } this.setState({ retDone: true }); }
+  openLogin(action) { this.setState({ loginOpen: true, loginPending: action || null, loginLoading: false }); }
+  closeLogin() { this.setState({ loginOpen: false, loginLoading: false }); }
+  doLogin() {
+    if (this.state.loginLoading) return;
+    this.setState({ loginLoading: true });
+    this._t(() => {
+      const pending = this.state.loginPending;
+      const offer = this.state.pendingOffer;
+      const route = { anunciar: 'marketplace', compensar: 'marketplace', casar: 'marketplace', retificar: 'analise', pendencias: 'analise' }[pending];
+      this.setState({ loggedIn: true, loginOpen: false, loginLoading: false, loginPending: null, pendingOffer: null });
+      if (route) this.setState({ screen: route });
+      if (pending === 'casar' && offer) this.setState({ matchOpen: true, matchOffer: offer, matchDone: false });
+      if (pending === 'retificar' && this.state.uploadState === 'done') this.setState({ retDone: true });
+    }, 950);
+  }
+  pendingText(a) {
+    return ({
+      anunciar: 'Entre para anunciar seu excedente no marketplace.',
+      compensar: 'Entre para compensar seu déficit com cota (CRA) ou aluguel.',
+      casar: 'Entre para fechar este pareamento com o vizinho.',
+      pendencias: 'Entre para ver as pendências oficiais do seu imóvel.',
+      retificar: 'Entre para gerar a retificação do seu CAR.',
+    })[a] || 'Use a mesma conta que você já usa no SICAR. É um toque.';
+  }
+
+  igniteVals() {
+    const ig = this.state.ignite;
+    const o = (n) => (ig >= n ? 1 : 0);
+    return { opPerim: o(1), opHidro: o(2), opApp: o(3), opRl: o(4), opDef: o(5), seloIn: ig >= 6, seloPending: ig < 6, perimDash: ig >= 1 ? 0 : 1400 };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const tab = (name) => ({
+      color: s.screen === name ? '#1B2018' : '#4A4F44',
+      border: s.screen === name ? '#1F8D49' : 'transparent',
+      weight: s.screen === name ? '700' : '600',
+      cur: s.screen === name ? 'page' : undefined,
+    });
+    const fpill = (v) => ({ bg: s.mkFilter === v ? '#1B2018' : '#FFFFFF', color: s.mkFilter === v ? '#EFF1EB' : '#4A4F44', border: s.mkFilter === v ? '#1B2018' : '#D6DACE' });
+    const bchip = (v) => ({ bg: s.mkBioma === v ? 'rgba(31,141,73,.12)' : '#FFFFFF', color: s.mkBioma === v ? '#14532D' : '#4A4F44', border: s.mkBioma === v ? '#1F8D49' : '#D6DACE', weight: s.mkBioma === v ? '700' : '600' });
+    const offers = this.baseOffers()
+      .filter((o) => (s.mkFilter === 'todos' || o.tipo === s.mkFilter) && (s.mkBioma === 'todos' || o.bioma === s.mkBioma))
+      .map((o) => ({ ...o, isVenda: o.tipo === 'venda', isAluguel: o.tipo === 'aluguel', tipoLabel: o.tipo === 'venda' ? 'Venda · CRA' : 'Aluguel', compativel: o.bioma === 'Cerrado', naoCompativel: o.bioma !== 'Cerrado', hasPrazo: !!o.prazo, onCasar: () => this.casar(o) }));
+    const mo = s.matchOffer || {};
+    return {
+      isHero: s.screen === 'hero',
+      isPainel: s.screen === 'painel',
+      isMarket: s.screen === 'marketplace',
+      isAnalise: s.screen === 'analise',
+      isCorridor: s.screen === 'corridor',
+      isApp: s.screen !== 'hero',
+      isMobile: s.viewport === 'mobile',
+      isDesktop: s.viewport === 'desktop',
+      loggedIn: s.loggedIn,
+      loggedOut: !s.loggedIn,
+      consulting: s.consulting,
+      loginOpen: s.loginOpen,
+      loginLoading: s.loginLoading,
+      loginIdle: !s.loginLoading,
+      loginPendingText: this.pendingText(s.loginPending),
+      carInput: s.carInput,
+      goHome: () => this.goHome(),
+      goPainel: () => this.go('painel'),
+      goMarket: () => this.go('marketplace'),
+      goAnalise: () => this.go('analise'),
+      goCorridor: () => this.go('corridor'),
+      consultAgain: () => this.consult(),
+      openTipCra: () => this.openTip('cra'),
+      openTipMf: () => this.openTip('mf'),
+      openTipArr: () => this.openTip('arrendamento'),
+      closeTip: () => this.closeTip(),
+      stopProp: (e) => e.stopPropagation(),
+      offers,
+      offersEmpty: offers.length === 0,
+      offerCount: offers.length,
+      fTudo: fpill('todos'), fVenda: fpill('venda'), fAluguel: fpill('aluguel'),
+      setFTudo: () => this.setFilter('todos'), setFVenda: () => this.setFilter('venda'), setFAluguel: () => this.setFilter('aluguel'),
+      bTodos: bchip('todos'), bCerrado: bchip('Cerrado'), bAmazonia: bchip('Amazônia'), bMata: bchip('Mata Atlântica'),
+      setBTodos: () => this.setBioma('todos'), setBCerrado: () => this.setBioma('Cerrado'), setBAmazonia: () => this.setBioma('Amazônia'), setBMata: () => this.setBioma('Mata Atlântica'),
+      matchOpen: s.matchOpen, matchDone: s.matchDone, matchPending: s.matchOpen && !s.matchDone,
+      matchArea: mo.area || '', matchValor: (mo.valor || '') + (mo.unit || ''), matchTipoLabel: mo.tipoLabel || '', matchLocal: mo.local || '', matchPrazo: mo.prazo || '', matchIsVenda: !!mo.isVenda, matchHasPrazo: !!mo.prazo,
+      closeMatch: () => this.closeMatch(), confirmMatch: () => this.confirmMatch(),
+      anunciar: () => (this.state.loggedIn ? this.go('analise') : this.openLogin('anunciar')),
+      uploadIdle: s.uploadState === 'idle',
+      uploadingNow: s.uploadState === 'uploading',
+      uploadDone: s.uploadState === 'done',
+      retDone: s.retDone,
+      retPending: !s.retDone,
+      startUpload: () => this.startUpload(),
+      genRet: () => this.genRet(),
+      onDrop: (e) => { e.preventDefault(); this.startUpload(); },
+      onDragOver: (e) => e.preventDefault(),
+      tipOpen: !!s.tip,
+      tipTerm: s.tip ? this.tipInfo(s.tip).term : '',
+      tipText: s.tip ? this.tipInfo(s.tip).text : '',
+      tabPainel: tab('painel'),
+      tabMarket: tab('marketplace'),
+      tabAnalise: tab('analise'),
+      tabCorridor: tab('corridor'),
+      compensar: () => (this.state.loggedIn ? this.go('marketplace') : this.openLogin('compensar')),
+      verPendencias: () => (this.state.loggedIn ? this.go('analise') : this.openLogin('pendencias')),
+      gerarRetificacao: () => (this.state.loggedIn ? this.go('analise') : this.openLogin('retificar')),
+      consult: () => this.consult(),
+      consultExample: () => this.consultExample(),
+      onCarInput: (e) => this.setState({ carInput: e.target.value }),
+      onCarKey: (e) => { if (e.key === 'Enter') this.consult(); },
+      openLoginGeneric: () => this.openLogin(null),
+      closeLogin: () => this.closeLogin(),
+      doLogin: () => this.doLogin(),
+      ...this.igniteVals(),
+    };
+  }
+}
+</script>
+</body>
+</html>

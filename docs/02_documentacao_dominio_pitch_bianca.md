@@ -1,4 +1,4 @@
-# Reverde — Domínio e Pitch (Bianca)
+# SimplifiCAR — Domínio e Pitch (Bianca)
 
 > Onde o conhecimento ambiental vira regra de negócio e onde nasce o pitch.
 > Pende da Doc 1 (Visão Geral). Os números legais aqui são a base do cálculo da Doc 2.
@@ -58,7 +58,7 @@ Para resolver de verdade: lê as pendências oficiais e gera o arquivo de retifi
 2. Faça login (hoje, com a conta gov.br).
 3. Selecione o imóvel desejado.
 4. Escolha a opção **"Baixar arquivo .CAR"** (ou o `.RET` **completo**, não o simplificado).
-5. Suba esse arquivo aqui na Reverde.
+5. Suba esse arquivo aqui na SimplifiCAR.
 
 Texto curto sugerido para a UI: "Precisamos do seu arquivo .CAR completo (com a etapa Geo) para ler suas pendências oficiais e montar sua retificação. O arquivo simplificado não serve, pois não traz os polígonos da sua reserva e APP."
 
@@ -105,7 +105,7 @@ Honestidade técnica que impressiona: "o gov.br confirma quem é a pessoa; os da
 ## 8. Estrutura do pitch
 
 1. **O problema (20s, sem jargão):** todo fazendeiro precisa do cadastro ambiental em dia. Fazer e corrigir é caro e confuso, então muita gente fica irregular e perde acesso a crédito. (Conte como uma pessoa, não como uma lei.)
-2. **A solução:** a Reverde diagnostica na hora, ajuda a corrigir, e transforma a regularização em oportunidade.
+2. **A solução:** a SimplifiCAR diagnostica na hora, ajuda a corrigir, e transforma a regularização em oportunidade.
 3. **Demo ao vivo:** login gov.br, mapa acende, score, diagnóstico em português de gente, o gancho do excedente/déficit.
 4. **O diferencial:** o marketplace que conecta quem tem mata sobrando (vende ou aluga) com quem precisa compensar.
 5. **Impacto:** individual (crédito, renda) e coletivo (corredores ecológicos, bacias recuperadas).
