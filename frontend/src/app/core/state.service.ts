@@ -61,6 +61,7 @@ export class AppState {
   uploadState = signal<UploadState>('idle');
   uploadFileName = signal('');
   uploadPendencias = signal<Pendencia[]>([]);
+  uploadedPropId = signal<number | null>(null); // imóvel criado pelo upload (§4.7)
   retDone = signal(false);
   retMinuta = signal<string[] | null>(null);
 
@@ -259,6 +260,7 @@ export class AppState {
       this.api.uploadCar(file).subscribe({
         next: (p) => {
           this.uploadPendencias.set(p.pendencias ?? this.demoPendencias());
+          this.uploadedPropId.set(p.diagnostico?.propriedadeId ?? null);
           this.uploadState.set('done');
         },
         error: () => {
@@ -288,7 +290,9 @@ export class AppState {
     this.applyRet();
   }
   private applyRet() {
-    const id = this.property()?.diagnostico.propriedadeId;
+    // Prefer the property created by the .RET upload (Análise Completa); fall
+    // back to the consulted property when retificação is triggered from the painel.
+    const id = this.uploadedPropId() ?? this.property()?.diagnostico?.propriedadeId;
     if (id != null) {
       this.api.gerarRetificacao(id).subscribe({
         next: (r) => {

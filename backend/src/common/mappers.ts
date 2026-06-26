@@ -95,8 +95,34 @@ export function canonicalGeoTipo(raw: string): string {
     SEDE_IMOVEL: 'sede',
   };
   if (map[raw]) return map[raw];
-  if (raw.startsWith('APP')) return 'app';
+  // Any APP*/RIO*/hidrografia layer is water/APP (contract §5).
+  if (raw.startsWith('APP') || raw.startsWith('RIO') || raw.startsWith('HIDRO'))
+    return 'app';
   return raw.toLowerCase();
+}
+
+/**
+ * Bioma predominante por UF (aproximação p/ imóvel enviado na Análise Completa,
+ * onde o `.RET` não traz o bioma). Um estado pode cobrir mais de um bioma; isto
+ * é uma simplificação consciente do MVP. Casa com o seed dos imóveis-demo.
+ */
+const UF_BIOMA: Record<string, string> = {
+  AC: 'Amazônia', AM: 'Amazônia', AP: 'Amazônia', PA: 'Amazônia',
+  RO: 'Amazônia', RR: 'Amazônia', MT: 'Amazônia', TO: 'Amazônia', MA: 'Amazônia',
+  CE: 'Caatinga', RN: 'Caatinga', PB: 'Caatinga', PE: 'Caatinga',
+  AL: 'Caatinga', SE: 'Caatinga', PI: 'Caatinga', BA: 'Caatinga',
+  GO: 'Cerrado', DF: 'Cerrado', MS: 'Cerrado', MG: 'Cerrado',
+  PR: 'Mata Atlântica', SC: 'Mata Atlântica', RS: 'Mata Atlântica',
+  SP: 'Mata Atlântica', RJ: 'Mata Atlântica', ES: 'Mata Atlântica',
+};
+export function biomaPorUf(uf: string | null | undefined): string {
+  if (!uf) return 'Cerrado';
+  return UF_BIOMA[uf.toUpperCase()] ?? 'Cerrado';
+}
+
+/** % de Reserva Legal exigido por bioma (Código Florestal; docs/05). */
+export function biomaPercent(bioma: string): number {
+  return bioma === 'Amazônia' ? 0.8 : 0.2;
 }
 
 export interface ScoreInputs {

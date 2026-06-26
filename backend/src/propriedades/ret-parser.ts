@@ -1,5 +1,10 @@
 import AdmZip from 'adm-zip';
-import { canonicalGeoTipo, computeScore } from '../common/mappers';
+import {
+  biomaPercent,
+  biomaPorUf,
+  canonicalGeoTipo,
+  computeScore,
+} from '../common/mappers';
 
 /**
  * Parse an uploaded `.RET` / `.CAR` file. The file is a ZIP of:
@@ -14,6 +19,7 @@ export interface ParsedRet {
   nome: string | null;
   municipio: string | null;
   uf: string | null;
+  bioma: string;
   areaHa: number;
   geo: { type: 'FeatureCollection'; features: any[] };
   diagnostico: {
@@ -77,10 +83,17 @@ export function parseRet(buffer: Buffer): ParsedRet {
       geometry: g.geoJson,
     }));
 
+  const uf: string | null = imovel.siglaEstado ?? null;
+  const bioma = biomaPorUf(uf);
+
   const areaHa = areaByTipo('AREA_IMOVEL') || Number(main.areaTotalImovelDocumental) || 0;
-  const rlRealHa = areaByTipo('ARL_PROPOSTA') || areaByTipo('ARL_TOTAL');
-  const deficitFromGeo = areaByTipo('ARL_A_RECUPERAR');
-  const rlExigidaHa = rlRealHa + deficitFromGeo;
+  // RL exigida = regra legal (% do bioma × área) — mesma definição do seed/§6,
+  // não a soma proposta+recompor (que superestimava e divergia do score do seed).
+  const rlExigidaHa = areaHa * biomaPercent(bioma);
+  // ARL_A_RECUPERAR é o déficit oficial do SICAR; dele inferimos a RL real
+  // (vegetação nativa reconhecida na RL) de forma consistente com o seed.
+  const recomporRl = areaByTipo('ARL_A_RECUPERAR');
+  const rlRealHa = Math.max(0, rlExigidaHa - recomporRl);
   const appHa = areaByTipo('APP_TOTAL');
   const appRecomporHa = areaByTipo('APP_VAZIO');
   const areaConsolidadaHa = areaByTipo('AREA_CONSOLIDADA');
@@ -93,11 +106,11 @@ export function parseRet(buffer: Buffer): ParsedRet {
   });
 
   const pendencias: ParsedRet['pendencias'] = [];
-  if (deficitFromGeo > 0.05) {
+  if (recomporRl > 0.05) {
     pendencias.push({
       tipo: 'reserva_legal',
       gravidade: 'alerta',
-      descricao: `Reserva Legal a recompor: ${deficitFromGeo.toFixed(2)} ha.`,
+      descricao: `Reserva Legal a recompor: ${recomporRl.toFixed(2)} ha.`,
     });
   }
   if (appRecomporHa > 0.05) {
@@ -119,7 +132,8 @@ export function parseRet(buffer: Buffer): ParsedRet {
     codImovel: imovel.protocoloCAR || mainEntry.entryName,
     nome: imovel.nome ?? null,
     municipio: imovel.nomeMunicipio ?? null,
-    uf: imovel.siglaEstado ?? null,
+    uf,
+    bioma,
     areaHa,
     geo: { type: 'FeatureCollection', features },
     diagnostico: {

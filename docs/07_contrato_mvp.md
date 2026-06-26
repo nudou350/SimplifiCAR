@@ -206,9 +206,11 @@ Body: `{ ofertaId, propriedadeDemandanteId }` → `{ matchId, status: "proposto"
 
 ### 4.7 `POST /propriedades/upload` `[CEREJA]`
 Multipart `file` = `.RET` (ZIP de JSON + GeoJSON). Faz unzip + parse, extrai camadas `geo[]` e pendências oficiais, persiste `propriedade(origem='analise_completa')` + `pendencia(origem='oficial')` + `diagnostico`. Resposta = mesma shape de §4.1 + `"pendencias": [{tipo,gravidade,descricao}]`.
+- **bioma** é derivado por UF (`biomaPorUf`, simplificação do MVP) já que o `.RET` não o traz.
+- **rl_exigida** = regra legal (área × % do bioma); **rl_real** = `max(0, exigida − ARL_A_RECUPERAR)`. Mantém o score consistente com o seed (mesma definição §6). A pendência cita o `ARL_A_RECUPERAR` oficial.
 
 ### 4.8 `POST /diagnosticos/:id/retificacao` `[CEREJA]`
-Gera rascunho (texto/checklist). Resposta: `{ "minuta": "texto...", "itens": ["..."] }`.
+`:id` = **propriedadeId** (consistente com §4.2; pega o diagnóstico mais recente da propriedade). Gera rascunho (texto/checklist). Resposta: `{ "minuta": "texto...", "itens": ["..."] }`.
 
 ---
 

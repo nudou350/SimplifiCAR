@@ -28,17 +28,22 @@ export class DiagnosticosService {
    * Templates a plain-text minuta + checklist from the stored numbers.
    * No live LLM — deterministic text from the diagnostic figures.
    */
-  async gerarRetificacao(diagnosticoId: number) {
+  async gerarRetificacao(propriedadeId: number) {
+    // `:id` em /diagnosticos/* é o propriedade_id (consistente com §4.2 e o front).
+    // Pega o diagnóstico mais recente da propriedade.
     const result = await this.db.query(
       `SELECT d.*, p.cod_imovel, p.nome AS prop_nome, p.municipio, p.uf, p.bioma, p.area_ha
          FROM diagnostico d
          JOIN propriedade p ON p.id = d.propriedade_id
-        WHERE d.id = $1
+        WHERE d.propriedade_id = $1
+        ORDER BY d.criado_em DESC, d.id DESC
         LIMIT 1`,
-      [diagnosticoId],
+      [propriedadeId],
     );
     if (result.rowCount === 0) {
-      throw new NotFoundException(`Diagnóstico ${diagnosticoId} não encontrado.`);
+      throw new NotFoundException(
+        `Diagnóstico para propriedade ${propriedadeId} não encontrado.`,
+      );
     }
     const r = result.rows[0];
     const n = (v: unknown) => Number(v ?? 0);

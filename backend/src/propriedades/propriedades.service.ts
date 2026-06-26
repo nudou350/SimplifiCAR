@@ -46,6 +46,7 @@ export class PropriedadesService {
            nome = EXCLUDED.nome,
            municipio = EXCLUDED.municipio,
            uf = EXCLUDED.uf,
+           bioma = EXCLUDED.bioma,
            area_ha = EXCLUDED.area_ha,
            origem = 'analise_completa',
            geo_layers = EXCLUDED.geo_layers
@@ -55,7 +56,7 @@ export class PropriedadesService {
           parsed.nome,
           parsed.municipio,
           parsed.uf,
-          null, // bioma: not present in .RET; left for pipeline/enrichment
+          parsed.bioma, // derivado por UF (mappers.biomaPorUf)
           parsed.areaHa,
           'Pendente',
           JSON.stringify(parsed.geo),
