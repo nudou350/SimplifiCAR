@@ -1,0 +1,36 @@
+# Node / NestJS / Angular
+node_modules/
+dist/
+.angular/
+*.log
+npm-debug.log*
+.env
+.env.local
+
+# Python (pipeline)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Dados geoespaciais brutos / pesados (não versionar shapefiles, rasters, dumps)
+data/raw/
+data/processed/
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.tif
+*.tiff
+*.gpkg
+*.sql.gz
+*.dump
+
+# OS / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
