@@ -31,6 +31,9 @@ data/mapbiomas/
 *.sql.gz
 *.dump
 
+# Documentação interna (fonte da verdade do produto; não necessária no deploy)
+docs/
+
 # playwright-cli (sessão, snapshots, scripts temporários)
 .playwright-cli/
 
