@@ -121,10 +121,12 @@ export class ParcelMapComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.map = L.map(this.mapEl.nativeElement, {
-      zoomControl: true,
+      zoomControl: false,
       attributionControl: false,
       scrollWheelZoom: false,
     }).setView([-15, -47], 5);
+    // Zoom no canto inferior direito p/ não cobrir o selo "Vista cadastral".
+    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
     const prop = this.state.property();
     if (prop) {
       this.lastGeoRef = prop.geo;
