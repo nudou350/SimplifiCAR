@@ -64,6 +64,7 @@ export class AppState {
   uploadedPropId = signal<number | null>(null); // imóvel criado pelo upload (§4.7)
   retDone = signal(false);
   retMinuta = signal<string[] | null>(null);
+  retMinutaTexto = signal<string | null>(null); // minuta completa (p/ download)
 
   private timers: any[] = [];
   private t(fn: () => void, ms: number) {
@@ -92,13 +93,23 @@ export class AppState {
   // campos de futebol ~ 1 ha (mockup convention: 8 ha = 8 campos)
   camposFutebol = computed(() => Math.max(0, Math.round(this.diagnostico()?.deficitHa ?? 0)));
 
+  // Há déficit a compensar? Gate do "casar" — sem déficit, casar não faz sentido
+  // (mesmo limiar de 0,05 ha usado em computeScore / situacao).
+  temDeficit = computed(() => (this.diagnostico()?.deficitHa ?? 0) > 0.05);
+
   offers = computed(() => {
     const f = this.mkFilter();
     const b = this.mkBioma();
+    const propBioma = this.property()?.bioma ?? null;
     const wantTipo: TipoOferta | null = f === 'todos' ? null : f === 'venda' ? 'venda' : 'arrendamento';
-    return this.allOffers().filter(
-      (o) => (wantTipo === null || o.tipoOferta === wantTipo) && (b === 'todos' || o.bioma === b),
-    );
+    return this.allOffers()
+      .filter(
+        (o) => (wantTipo === null || o.tipoOferta === wantTipo) && (b === 'todos' || o.bioma === b),
+      )
+      // Compatibilidade = mesmo bioma do imóvel consultado (Código Florestal, Art. 48:
+      // compensação de RL deve ser no mesmo bioma). Calculamos aqui, onde conhecemos o
+      // bioma do déficit do usuário; o backend não tem esse contexto e usa um default.
+      .map((o) => ({ ...o, compativel: propBioma ? o.bioma === propBioma : o.compativel }));
   });
 
   // ===== navigation =====
@@ -297,6 +308,7 @@ export class AppState {
       this.api.gerarRetificacao(id).subscribe({
         next: (r) => {
           this.retMinuta.set(r.itens ?? null);
+          this.retMinutaTexto.set(r.minuta ?? null);
           this.retDone.set(true);
         },
         error: () => this.retDone.set(true),
@@ -304,6 +316,48 @@ export class AppState {
     } else {
       this.retDone.set(true);
     }
+  }
+
+  /**
+   * Baixa a minuta de retificação como arquivo .txt. Usa o texto completo
+   * devolvido pela API; se faltar (ex.: offline), monta um fallback a partir
+   * dos números já carregados — o download nunca sai vazio.
+   */
+  baixarMinuta() {
+    if (typeof document === 'undefined') return;
+    const texto = this.retMinutaTexto() ?? this.minutaFallback();
+    const cod = this.property()?.codImovel ?? 'CAR';
+    const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `retificacao_${cod}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  private minutaFallback(): string {
+    const p = this.property();
+    const d = this.diagnostico();
+    const cod = p?.codImovel ?? 'CAR';
+    const fmt = (v?: number) =>
+      (v ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+    return [
+      'MINUTA DE RETIFICAÇÃO DO CADASTRO AMBIENTAL RURAL',
+      '',
+      `Imóvel: ${p?.nome ?? cod} (CAR ${cod}), ${p?.municipio ?? '—'}/${p?.uf ?? '—'}.`,
+      `Área total: ${fmt(p?.areaHa)} ha. Score de conformidade: ${d?.score ?? 0}/100.`,
+      '',
+      'Providências sugeridas:',
+      ...(this.retMinuta() ?? ['Confirmar a vetorização de RL e APP na Central do CAR.']).map(
+        (it, i) => `  ${i + 1}. ${it}`,
+      ),
+      '',
+      'Rascunho gerado automaticamente a partir do diagnóstico — revisar com responsável',
+      'técnico antes do envio à Central do CAR.',
+    ].join('\n');
   }
 
   // ===== login (§4.3) =====

@@ -77,10 +77,10 @@ const TITULO: Record<string, string> = {
                     @if (s.retMinuta(); as itens) {
                       @for (item of itens; track $index) { {{ item }}<br> }
                     } @else {
-                      retificacao_{{ codShort() }}.pdf<br>RL proposta: {{ rlProposta() }} ha · APP: +1,2 ha<br>compensação: CRA {{ deficit() }} ha
+                      retificacao_{{ codShort() }}.txt<br>RL proposta: {{ rlProposta() }} ha · APP: +1,2 ha<br>compensação: CRA {{ deficit() }} ha
                     }
                   </div>
-                  <button style="width:100%;min-height:48px;border-radius:9px;background:var(--tinta);color:var(--papel);font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0L5 7m3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12v1.5h10V12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Baixar minuta (.pdf)</button>
+                  <button (click)="s.baixarMinuta()" style="width:100%;min-height:48px;border-radius:9px;background:var(--tinta);color:var(--papel);font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0L5 7m3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12v1.5h10V12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Baixar minuta (.txt)</button>
                 </div>
               } @else {
                 <button (click)="s.genRet()" style="width:100%;min-height:52px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:9px;">

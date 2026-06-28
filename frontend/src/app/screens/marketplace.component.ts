@@ -68,11 +68,13 @@ import { Oferta } from '../core/types';
                 }
               </div>
               <div style="margin-top:auto;padding-top:4px;">
-                @if (offer.compativel) {
+                @if (offer.compativel && s.temDeficit()) {
                   <button (click)="s.casar(offer)" style="width:100%;min-height:46px;border-radius:9px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;">
                     <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 15s-6-3.7-6-8a3.3 3.3 0 0 1 6-1.9A3.3 3.3 0 0 1 15 7c0 4.3-6 8-6 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
                     Casar com meu déficit
                   </button>
+                } @else if (offer.compativel) {
+                  <div style="display:flex;align-items:center;gap:7px;min-height:46px;justify-content:center;font-size:13px;color:var(--mata-tx);border:1.5px dashed rgba(31,141,73,.4);border-radius:9px;">Compatível · você não tem déficit a compensar</div>
                 } @else {
                   <div style="display:flex;align-items:center;gap:7px;min-height:46px;justify-content:center;font-size:13px;color:var(--tinta-muda);border:1.5px dashed var(--linha);border-radius:9px;">Bioma diferente do seu déficit</div>
                 }

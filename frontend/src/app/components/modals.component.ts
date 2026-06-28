@@ -73,7 +73,11 @@ import { AppState } from '../core/state.service';
                 <div style="flex:1;background:rgba(31,141,73,.08);border:1.5px solid rgba(31,141,73,.3);border-radius:12px;padding:13px;">
                   <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mata-tx);margin-bottom:6px;">Você</div>
                   <div style="font-weight:700;font-size:15px;line-height:1.2;margin-bottom:8px;">{{ propNome() }}</div>
-                  <div style="font-size:13.5px;line-height:1.45;color:var(--tinta);">Cobre o déficit de <strong>{{ deficit() | ha:1 }}</strong> e o selo vira <strong style="color:var(--mata-tx);">Em dia</strong>.</div>
+                  @if (deficit() > 0.05) {
+                    <div style="font-size:13.5px;line-height:1.45;color:var(--tinta);">Cobre o déficit de <strong>{{ deficit() | ha:1 }}</strong> e o selo vira <strong style="color:var(--mata-tx);">Em dia</strong>.</div>
+                  } @else {
+                    <div style="font-size:13.5px;line-height:1.45;color:var(--tinta);">Garante esta reserva como compensação e mantém seu selo <strong style="color:var(--mata-tx);">Em dia</strong>.</div>
+                  }
                 </div>
                 <div style="flex:none;display:grid;place-items:center;color:var(--tinta-muda);" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 8h13m0 0-3-3m3 3-3 3M19 14H6m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div style="flex:1;background:rgba(201,162,39,.1);border:1.5px solid rgba(201,162,39,.4);border-radius:12px;padding:13px;">

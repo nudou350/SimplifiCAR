@@ -45,7 +45,7 @@ VALUES (
   2, 21.2716, 0.0000, 0.0000, 0.0000,
   0.0000, 21.2716, 0.0000, 'deficit', 25,
   '[{"classe": "consolidada", "label": "Área consolidada / alterada", "areaHa": 106.36, "fonte": "declarado"}, {"classe": "floresta", "label": "Formação florestal", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "savanica", "label": "Formação savânica", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "campo", "label": "Campo", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "agua", "label": "Água / APP", "areaHa": 0, "fonte": "satelite"}]'::jsonb,
-  'Atenção: sua propriedade está com déficit de Reserva Legal. A lei exige cerca de 21,3 hectares de vegetação nativa preservada (20% do imóvel), mas hoje praticamente não há mata reconhecida — faltam aproximadamente 21,3 hectares, o equivalente a uns 30 campos de futebol. Recompor essa área plantando do zero é caro e demorado; em muitos casos sai bem mais barato compensar comprando CRA ou arrendando excedente de outro produtor. Veja as ofertas compatíveis no marketplace.'
+  'Atenção: sua propriedade está com déficit de Reserva Legal. A lei exige cerca de 21,3 hectares de vegetação nativa preservada (20% do imóvel), mas hoje praticamente não há mata reconhecida — faltam aproximadamente 21,3 hectares, o equivalente a uns 21 campos de futebol. Recompor essa área plantando do zero é caro e demorado; em muitos casos sai bem mais barato compensar comprando CRA ou arrendando excedente de outro produtor. Veja as ofertas compatíveis no marketplace.'
 );
 
 -- 2.3) propriedade CE-2313302-1B (recompor_app) ---------------------
@@ -65,7 +65,7 @@ VALUES (
   3, 1.5095, 0.0000, 2.1327, 2.1465,
   3.2804, 1.5095, 0.0000, 'deficit', 0,
   '[{"classe": "consolidada", "label": "Área consolidada / alterada", "areaHa": 6.88, "fonte": "declarado"}, {"classe": "floresta", "label": "Formação florestal", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "savanica", "label": "Formação savânica", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "campo", "label": "Campo", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "agua", "label": "Água / APP", "areaHa": 2.13, "fonte": "satelite"}]'::jsonb,
-  'Sua propriedade tem pendências a regularizar: falta cerca de 1,5 hectare de Reserva Legal e há aproximadamente 2,1 hectares de Área de Preservação Permanente (APP), na beira de rio, a recompor — somando perto de 5 campos de futebol. A APP precisa ser recuperada no próprio imóvel; já a Reserva Legal pode ser compensada. Faça a Análise Completa para ver o passo a passo e gerar a minuta de retificação.'
+  'Sua propriedade tem pendências a regularizar: falta cerca de 1,5 hectare de Reserva Legal e há aproximadamente 2,1 hectares de Área de Preservação Permanente (APP), na beira de rio, a recompor — cerca de 3,6 hectares no total. A APP precisa ser recuperada no próprio imóvel; já a Reserva Legal pode ser compensada. Faça a Análise Completa para ver o passo a passo e gerar a minuta de retificação.'
 );
 
 -- 2.4) propriedade PR-4110201-4B (deficit_grande) ---------------------
@@ -85,7 +85,7 @@ VALUES (
   4, 53.6426, 0.0000, 0.0000, 0.0000,
   0.0000, 53.6426, 0.0000, 'deficit', 25,
   '[{"classe": "consolidada", "label": "Área consolidada / alterada", "areaHa": 268.21, "fonte": "declarado"}, {"classe": "floresta", "label": "Formação florestal", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "savanica", "label": "Formação savânica", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "campo", "label": "Campo", "areaHa": 0.0, "fonte": "satelite"}, {"classe": "agua", "label": "Água / APP", "areaHa": 0, "fonte": "satelite"}]'::jsonb,
-  'Sua propriedade está com déficit grande de Reserva Legal: a lei exige cerca de 53,6 hectares de mata nativa (20% do imóvel) e hoje não há vegetação reconhecida — faltam aproximadamente 53,6 hectares, algo como 75 campos de futebol. Como a recomposição total seria muito custosa, vale avaliar compensar parte via CRA no marketplace e priorizar as áreas mais sensíveis.'
+  'Sua propriedade está com déficit grande de Reserva Legal: a lei exige cerca de 53,6 hectares de mata nativa (20% do imóvel) e hoje não há vegetação reconhecida — faltam aproximadamente 53,6 hectares, algo como 54 campos de futebol. Como a recomposição total seria muito custosa, vale avaliar compensar parte via CRA no marketplace e priorizar as áreas mais sensíveis.'
 );
 
 -- 3) pendências oficiais de CE-2313302 (.RET / Análise Completa) -------

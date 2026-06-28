@@ -72,19 +72,19 @@ TEXTO_IA = {
         "Atenção: sua propriedade está com déficit de Reserva Legal. A lei exige cerca de "
         "21,3 hectares de vegetação nativa preservada (20% do imóvel), mas hoje praticamente "
         "não há mata reconhecida — faltam aproximadamente 21,3 hectares, o equivalente a uns "
-        "30 campos de futebol. Recompor essa área plantando do zero é caro e demorado; em muitos "
+        "21 campos de futebol. Recompor essa área plantando do zero é caro e demorado; em muitos "
         "casos sai bem mais barato compensar comprando CRA ou arrendando excedente de outro "
         "produtor. Veja as ofertas compatíveis no marketplace.",
     "CE-2313302-1BC346842FE34636916F950EC6B63AC9":
         "Sua propriedade tem pendências a regularizar: falta cerca de 1,5 hectare de Reserva "
         "Legal e há aproximadamente 2,1 hectares de Área de Preservação Permanente (APP), na "
-        "beira de rio, a recompor — somando perto de 5 campos de futebol. A APP precisa ser "
+        "beira de rio, a recompor — cerca de 3,6 hectares no total. A APP precisa ser "
         "recuperada no próprio imóvel; já a Reserva Legal pode ser compensada. Faça a Análise "
         "Completa para ver o passo a passo e gerar a minuta de retificação.",
     "PR-4110201-4BF5A9647E0F455AAEA1C8F0A0889199":
         "Sua propriedade está com déficit grande de Reserva Legal: a lei exige cerca de 53,6 "
         "hectares de mata nativa (20% do imóvel) e hoje não há vegetação reconhecida — faltam "
-        "aproximadamente 53,6 hectares, algo como 75 campos de futebol. Como a recomposição "
+        "aproximadamente 53,6 hectares, algo como 54 campos de futebol. Como a recomposição "
         "total seria muito custosa, vale avaliar compensar parte via CRA no marketplace e "
         "priorizar as áreas mais sensíveis.",
 }

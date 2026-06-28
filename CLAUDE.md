@@ -11,7 +11,7 @@ A fonte da verdade do produto e da arquitetura está em `docs/`:
 - `docs/01_documentacao_tecnica_raphael.md` — arquitetura, stack, modelo de dados, API, ordem de build.
 - `docs/02_documentacao_dominio_pitch_bianca.md` — regras do Código Florestal que viram cálculo, pitch.
 
-Estes docs estão em português e descrevem o sistema-alvo; o código ainda não foi escrito. Ao implementar, siga-os e mantenha-os atualizados se a realidade divergir.
+Estes docs estão em português e descrevem o sistema-alvo. O MVP já está implementado (NestJS + Angular + PostGIS, scaffoldado e verificado ponta-a-ponta); o contrato congelado entre as camadas é `docs/07_contrato_mvp.md` e prevalece sobre os docs 0–6 na implementação. Mantenha os docs atualizados se a realidade divergir.
 
 ## Princípio arquitetural central (não viole)
 
@@ -67,7 +67,7 @@ Há dados reais de teste do CAR colhidos do ambiente DataPrev (que expira 28/06/
 - `data/shapefiles/DF/` — shapefiles públicos do CAR (Distrito Federal completo, 6 camadas, SIRGAS 2000) = base da Consulta Rápida; ver `data/shapefiles/README.md` + dicionário oficial em PDF.
 - `data/mapbiomas/DF_mapbiomas_col10_2024.tif` — recorte MapBiomas (cobertura do solo, 30 m) do DF = vegetação real p/ déficit vs declarado; ver `data/mapbiomas/README.md`.
 
-**Pipeline já bootstrapado:** venv em `pipeline/.venv` (rasterio, geopandas, shapely, rasterstats — `pipeline/requirements.txt`). Scripts: `pipeline/clip_mapbiomas.py` (recorta MapBiomas via `/vsicurl/`, sem GEE) e `pipeline/proof_chain.py` (prova de ponta a ponta: RL × MapBiomas → déficit/excedente — já validada). A cadeia de cálculo do Doc 2 §4 está comprovada com dados reais do DF.
+**Pipeline já bootstrapado:** venv em `pipeline/.venv` (rasterio, geopandas, shapely, rasterstats — `pipeline/requirements.txt`). Scripts: `pipeline/clip_mapbiomas.py` (recorta MapBiomas via `/vsicurl/`, sem GEE), `pipeline/proof_chain.py` (prova de ponta a ponta: RL × MapBiomas → déficit/excedente — já validada) e `pipeline/calc_diagnostico.py` (calcula déficit/excedente/situação/score de um imóvel pela fórmula autoritativa do §6 — mesma de `build_seed_sql.py`). A cadeia de cálculo do Doc 2 §4 está comprovada com dados reais do DF.
 
 Casos de demo definidos: 🟢 `MG-3127008-...` (excedente, geometria rica), 🔴 `CE-2313302-...` (recompor RL+APP), ⚫ déficit forte `CE-2300705-...` e `PR-4110201-...`.
 
@@ -99,3 +99,5 @@ cd frontend && npm run build                             # build de produção
 ## Infra / deploy
 
 Antes de qualquer escolha de deploy, porta, nginx, banco ou PM2, leia e siga `C:\Users\Raphael\Documents\Projetos\VPS_GUIDE.md`.
+
+Repositório: `nudou350/SimplifiCAR` (privado). Demo do MVP é vídeo local pré-gravado — sem deploy VPS neste passo.

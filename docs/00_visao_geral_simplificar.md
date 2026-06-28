@@ -16,7 +16,9 @@ Plataforma que ajuda o produtor rural a fazer e corrigir o cadastro ambiental da
 
 Todo imóvel rural no Brasil é obrigado a ter o CAR, o Cadastro Ambiental Rural. Fazer e principalmente corrigir esse cadastro é caro, lento e confuso. O sistema oficial (SICAR) é cheio de termo técnico e mapa que o pequeno produtor não entende. O resultado: muita gente faz errado, recebe pendência, ou simplesmente não mexe e fica irregular. Cadastro irregular trava crédito rural, licenças e a venda da safra.
 
-O Desafio 2 pede exatamente isto: simplificar a declaração e a retificação do CAR usando bases de dados abertas, garantindo o cumprimento do Código Florestal e gerando benefícios individuais e coletivos.
+**Texto oficial do Desafio 2:** *"Melhorar o acesso a dados geoespaciais do CAR — como podemos atualizar anualmente, com rapidez e acurácia, o mapeamento de uso e cobertura do solo de todos os estados brasileiros, melhorando a atualização dos cadastros e propiciando o aumento na quantidade e qualidade das análises do Cadastro Ambiental Rural (CAR)?"*
+
+O coração do desafio é o **motor de dados**: manter o mapeamento de uso e cobertura atualizado, em escala e com acurácia, para que as análises do CAR sejam mais e melhores. É por aí que a plataforma ataca primeiro — cruzando bases abertas (**MapBiomas × SICAR**) para recalcular o diagnóstico de todos os imóveis a cada coleção anual. Simplificar a declaração/retificação, garantir o Código Florestal e gerar benefício individual e coletivo são o que esse dado atualizado **habilita**.
 
 ---
 

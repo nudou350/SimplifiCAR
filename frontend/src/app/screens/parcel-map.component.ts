@@ -44,6 +44,32 @@ const TIPO_STYLE: Record<string, { color: string; fill?: string; weight: number;
   sede: { color: '#FAFBF7', fill: '#1B2018', weight: 2, threshold: 2, fillOp: 1, strokeOp: 1 },
 };
 
+// Human-readable label + 1-line explanation per canonical tipo, shown on hover
+// so anyone (banca incluída) entende o que cada cor significa. Cor casa com TIPO_STYLE.
+const TIPO_LABEL: Record<string, { nome: string; cor: string; desc: string }> = {
+  perimetro: { nome: 'Perímetro do imóvel', cor: '#FAFBF7', desc: 'Os limites da propriedade declarados no CAR.' },
+  app: { nome: 'APP — Área de Preservação Permanente', cor: '#2D6FA6', desc: 'Faixa protegida por lei (beira de rio, nascente, encosta). Não pode ser desmatada.' },
+  consolidada: { nome: 'Área consolidada', cor: '#E0C97F', desc: 'Área já em uso (lavoura, pasto, construção) antes de 2008 — uso regularizável.' },
+  vegetacao: { nome: 'Vegetação nativa', cor: '#7DC975', desc: 'Mata nativa existente detectada por satélite (MapBiomas).' },
+  reserva_legal: { nome: 'Reserva Legal', cor: '#1F8D49', desc: 'Percentual do imóvel que a lei exige manter com mata nativa (20% aqui; 80% na Amazônia).' },
+  deficit_rl: { nome: 'Déficit de Reserva Legal', cor: '#C8442B', desc: 'O que falta de mata para cumprir a lei. Vira demanda no marketplace (compensar via CRA ou aluguel).' },
+  sede: { nome: 'Sede do imóvel', cor: '#FAFBF7', desc: 'Ponto da sede / benfeitoria principal.' },
+};
+
+// HTML do tooltip de uma feature (nome + área quando houver + explicação).
+function tooltipHtml(tipo: string, areaHa?: number): string {
+  const info = TIPO_LABEL[tipo];
+  if (!info) return '';
+  const area =
+    typeof areaHa === 'number' && isFinite(areaHa) && areaHa > 0
+      ? ` · ${areaHa.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ha`
+      : '';
+  return (
+    `<span class="sc-tip-head"><i style="background:${info.cor}"></i>${info.nome}${area}</span>` +
+    `<span class="sc-tip-desc">${info.desc}</span>`
+  );
+}
+
 @Component({
   selector: 'app-parcel-map',
   standalone: true,
@@ -62,6 +88,12 @@ const TIPO_STYLE: Record<string, { color: string; fill?: string; weight: number;
     .map-badge .dot{width:7px;height:7px;border-radius:50%;background:#1F8D49;box-shadow:0 0 0 4px rgba(31,141,73,.25);animation:scPulse 2.4s ease-in-out infinite;}
     .map-canvas{height:540px;width:100%;background:#1B2018;background-image:linear-gradient(rgba(250,251,247,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(250,251,247,.06) 1px,transparent 1px);background-size:46px 46px;}
     .map-canvas .leaflet-container{background:transparent;font:inherit;}
+    .map-canvas .leaflet-interactive{cursor:pointer;}
+    :host ::ng-deep .sc-tip{background:#11150F;border:1px solid #3A4233;border-radius:9px;padding:8px 11px;max-width:248px;white-space:normal;box-shadow:0 14px 30px -12px rgba(0,0,0,.7);}
+    :host ::ng-deep .sc-tip::before{display:none;}
+    :host ::ng-deep .sc-tip .sc-tip-head{display:flex;align-items:center;gap:7px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;color:#FAFBF7;line-height:1.25;}
+    :host ::ng-deep .sc-tip .sc-tip-head i{width:10px;height:10px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(250,251,247,.45);}
+    :host ::ng-deep .sc-tip .sc-tip-desc{display:block;margin-top:4px;font-size:12px;line-height:1.4;color:rgba(250,251,247,.78);}
   `],
 })
 export class ParcelMapComponent implements AfterViewInit, OnDestroy {
@@ -126,10 +158,23 @@ export class ParcelMapComponent implements AfterViewInit, OnDestroy {
             fillColor: st.fill,
             dashArray: st.dash,
             lineJoin: 'round',
+            // strokeOnly (perímetro): sem preenchimento, p/ não capturar o hover
+            // da área inteira e deixar as camadas internas responderem.
+            fill: !st.strokeOnly,
             fillOpacity: 0,
             opacity: 0,
           }),
         }) as unknown as L.Path;
+      }
+      // Tooltip explicativo no hover (segue o cursor). Diz o que é a cor.
+      const html = tooltipHtml(tipo, f.properties?.areaHa);
+      if (html) {
+        layer.bindTooltip(html, {
+          sticky: true,
+          direction: 'top',
+          className: 'sc-tip',
+          opacity: 1,
+        });
       }
       layer.addTo(this.map);
       const lb = (layer as any).getBounds?.();
