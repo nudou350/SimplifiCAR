@@ -19,8 +19,8 @@ import { AppState } from '../core/state.service';
           <input id="carField" type="text" autocomplete="off" spellcheck="false" placeholder="UF-0000000-0000.0000.0000.0000"
                  [value]="s.carInput()" (input)="s.carInput.set($any($event.target).value)" (keydown.enter)="s.consult()"
                  aria-label="Número do CAR"
-                 style="flex:1 1 240px;min-width:0;min-height:58px;padding:0 16px;border:1.5px solid var(--linha);border-radius:10px;background:#fff;font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.02em;color:var(--tinta);">
-          <button (click)="s.consult()" style="flex:0 0 auto;min-height:58px;padding:0 26px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:18px;display:inline-flex;align-items:center;gap:9px;box-shadow:0 1px 0 rgba(20,83,45,.55);">
+                 style="flex:3 1 240px;min-width:0;min-height:58px;padding:0 16px;border:1.5px solid var(--linha);border-radius:10px;background:#fff;font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.02em;color:var(--tinta);">
+          <button (click)="s.consult()" style="flex:1 1 160px;min-height:58px;padding:0 26px;border-radius:10px;background:var(--mata);color:#FAFBF7;font-weight:700;font-size:18px;display:inline-flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 1px 0 rgba(20,83,45,.55);">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.8"/><path d="m12.5 12.5 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Consultar
           </button>

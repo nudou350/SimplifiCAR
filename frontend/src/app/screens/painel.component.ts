@@ -67,13 +67,13 @@ const CLASSE_COLOR: Record<string, string> = {
               <div aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(201,162,39,.35);"></div>
               <svg viewBox="0 0 200 200" width="188" height="188" style="position:relative;animation:scStamp .65s cubic-bezier(.2,.7,.3,1.5) both;transform-origin:center" role="img" [attr.aria-label]="'Pontuação ' + d().score + ' de 100. Status: ' + s.faixa() + '.'">
                 <defs>
-                  <path id="scArcTop" d="M22,100 A78,78 0 0 1 178,100"/>
+                  <path id="scArcTop" d="M37,100 A63,63 0 0 1 163,100"/>
                   <path id="scArcBot" d="M30,108 A70,70 0 0 0 170,108"/>
                 </defs>
                 <circle cx="100" cy="100" r="92" fill="none" [attr.stroke]="seloStroke()" stroke-width="3"/>
                 <circle cx="100" cy="100" r="86" fill="none" [attr.stroke]="seloStroke()" stroke-width="6" stroke-dasharray="2 8" opacity=".55"/>
                 <circle cx="100" cy="100" r="79" fill="none" [attr.stroke]="seloStroke()" stroke-width="1.5"/>
-                <text font-family="'IBM Plex Mono',monospace" font-size="11.5" letter-spacing="3.5" [attr.fill]="seloText()"><textPath href="#scArcTop" startOffset="50%" text-anchor="middle">SELO DE CONFORMIDADE</textPath></text>
+                <text font-family="'IBM Plex Mono',monospace" font-size="9.5" letter-spacing="3" [attr.fill]="seloText()" opacity=".8"><textPath href="#scArcTop" startOffset="50%" text-anchor="middle">SELO DE CONFORMIDADE</textPath></text>
                 <text font-family="'IBM Plex Mono',monospace" font-size="9.5" letter-spacing="3" [attr.fill]="seloText()" opacity=".8"><textPath href="#scArcBot" startOffset="50%" text-anchor="middle">CÓDIGO FLORESTAL</textPath></text>
                 <text x="100" y="112" text-anchor="middle" font-family="'Bricolage Grotesque',sans-serif" font-weight="800" font-size="62" [attr.fill]="seloText()">{{ d().score }}</text>
                 <text x="100" y="138" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="2" [attr.fill]="seloText()" opacity=".85">DE 100</text>
