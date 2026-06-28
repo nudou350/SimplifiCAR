@@ -47,13 +47,13 @@ const TIPO_STYLE: Record<string, { color: string; fill?: string; weight: number;
 // Human-readable label + 1-line explanation per canonical tipo, shown on hover
 // so anyone (banca incluída) entende o que cada cor significa. Cor casa com TIPO_STYLE.
 const TIPO_LABEL: Record<string, { nome: string; cor: string; desc: string }> = {
-  perimetro: { nome: 'Perímetro do imóvel', cor: '#FAFBF7', desc: 'Os limites da propriedade declarados no CAR.' },
-  app: { nome: 'APP — Área de Preservação Permanente', cor: '#2D6FA6', desc: 'Faixa protegida por lei (beira de rio, nascente, encosta). Não pode ser desmatada.' },
-  consolidada: { nome: 'Área consolidada', cor: '#E0C97F', desc: 'Área já em uso (lavoura, pasto, construção) antes de 2008 — uso regularizável.' },
-  vegetacao: { nome: 'Vegetação nativa', cor: '#7DC975', desc: 'Mata nativa existente detectada por satélite (MapBiomas).' },
-  reserva_legal: { nome: 'Reserva Legal', cor: '#1F8D49', desc: 'Percentual do imóvel que a lei exige manter com mata nativa (20% aqui; 80% na Amazônia).' },
-  deficit_rl: { nome: 'Déficit de Reserva Legal', cor: '#C8442B', desc: 'O que falta de mata para cumprir a lei. Vira demanda no marketplace (compensar via CRA ou aluguel).' },
-  sede: { nome: 'Sede do imóvel', cor: '#FAFBF7', desc: 'Ponto da sede / benfeitoria principal.' },
+  perimetro: { nome: 'Perímetro do imóvel', cor: '#FAFBF7', desc: 'O contorno da propriedade, como está no cadastro.' },
+  app: { nome: 'APP — Área de Preservação Permanente', cor: '#2D6FA6', desc: 'Faixa que a lei protege (beira de rio, nascente, encosta). Não pode desmatar.' },
+  consolidada: { nome: 'Área consolidada', cor: '#E0C97F', desc: 'Área já usada (roça, pasto, construção) antes de 2008. A lei deixa manter.' },
+  vegetacao: { nome: 'Vegetação nativa', cor: '#7DC975', desc: 'Mata nativa que existe hoje, vista por satélite.' },
+  reserva_legal: { nome: 'Reserva Legal', cor: '#1F8D49', desc: 'Parte do imóvel que a lei manda manter com mata (20% aqui; 80% na Amazônia).' },
+  deficit_rl: { nome: 'Déficit de Reserva Legal', cor: '#C8442B', desc: 'Quanto de mata falta para cumprir a lei. É o que dá pra compensar.' },
+  sede: { nome: 'Sede do imóvel', cor: '#FAFBF7', desc: 'Onde fica a sede / construção principal.' },
 };
 
 // HTML do tooltip de uma feature (nome + área quando houver + explicação).
@@ -89,10 +89,10 @@ function tooltipHtml(tipo: string, areaHa?: number): string {
     .map-canvas{height:540px;width:100%;background:#1B2018;background-image:linear-gradient(rgba(250,251,247,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(250,251,247,.06) 1px,transparent 1px);background-size:46px 46px;}
     .map-canvas .leaflet-container{background:transparent;font:inherit;}
     .map-canvas .leaflet-interactive{cursor:pointer;}
-    :host ::ng-deep .sc-tip{background:#11150F;border:1px solid #3A4233;border-radius:9px;padding:8px 11px;max-width:248px;white-space:normal;box-shadow:0 14px 30px -12px rgba(0,0,0,.7);}
+    :host ::ng-deep .sc-tip{background:#11150F;border:1px solid #3A4233;border-radius:9px;padding:9px 12px;width:max-content;max-width:264px;min-width:170px;white-space:normal;box-shadow:0 14px 30px -12px rgba(0,0,0,.7);}
     :host ::ng-deep .sc-tip::before{display:none;}
-    :host ::ng-deep .sc-tip .sc-tip-head{display:flex;align-items:center;gap:7px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;color:#FAFBF7;line-height:1.25;}
-    :host ::ng-deep .sc-tip .sc-tip-head i{width:10px;height:10px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(250,251,247,.45);}
+    :host ::ng-deep .sc-tip .sc-tip-head{display:flex;align-items:flex-start;gap:7px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;color:#FAFBF7;line-height:1.3;}
+    :host ::ng-deep .sc-tip .sc-tip-head i{width:10px;height:10px;margin-top:3px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(250,251,247,.45);}
     :host ::ng-deep .sc-tip .sc-tip-desc{display:block;margin-top:4px;font-size:12px;line-height:1.4;color:rgba(250,251,247,.78);}
   `],
 })
