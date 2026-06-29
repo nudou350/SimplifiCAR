@@ -107,7 +107,10 @@ VALUES
   (NULL, 'arrendamento', 6.5000, 'Cerrado', 4900.00, '/ano', 180, 'São Desidério', 'BA', 55, 'ativa'),
   (NULL, 'venda', 15.4000, 'Cerrado', 61000.00, '', NULL, 'Formosa do Rio Preto', 'BA', 78, 'ativa'),
   (NULL, 'venda', 40.0000, 'Amazônia', 120000.00, '', NULL, 'Novo Progresso', 'PA', 1900, 'ativa'),
-  (NULL, 'arrendamento', 12.0000, 'Mata Atlântica', 9000.00, '/ano', 120, 'Sorocaba', 'SP', 2100, 'ativa');
+  (NULL, 'arrendamento', 12.0000, 'Mata Atlântica', 9000.00, '/ano', 120, 'Sorocaba', 'SP', 2100, 'ativa'),
+  (NULL, 'venda', 4.5000, 'Caatinga', 14000.00, '', NULL, 'Tauá', 'CE', 12, 'ativa'),
+  (NULL, 'arrendamento', 3.2000, 'Caatinga', 1900.00, '/ano', 120, 'Independência', 'CE', 28, 'ativa'),
+  (NULL, 'venda', 6.0000, 'Caatinga', 18500.00, '', NULL, 'Crateús', 'CE', 46, 'ativa');
 
 -- 5) ressincroniza as sequences (inserimos ids fixos) ------------------
 SELECT setval('usuario_id_seq', (SELECT MAX(id) FROM usuario));

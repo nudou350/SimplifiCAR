@@ -129,5 +129,9 @@ export function fallbackOfertas(): Oferta[] {
     mk(3, 'venda', 15.4, 'Cerrado', 61000, '', 'Formosa do Rio Preto', 'BA', 78),
     mk(5, 'venda', 40.0, 'Amazônia', 120000, '', 'Novo Progresso', 'PA', 1900),
     mk(6, 'arrendamento', 12.0, 'Mata Atlântica', 9000, '/ano', 'Sorocaba', 'SP', 2100, 120),
+    // Caatinga: compatíveis com o déficit do CE-2313302 (Tauá/CE), p/ permitir "Casar".
+    mk(7, 'venda', 4.5, 'Caatinga', 14000, '', 'Tauá', 'CE', 12),
+    mk(8, 'arrendamento', 3.2, 'Caatinga', 1900, '/ano', 'Independência', 'CE', 28, 120),
+    mk(9, 'venda', 6.0, 'Caatinga', 18500, '', 'Crateús', 'CE', 46),
   ];
 }

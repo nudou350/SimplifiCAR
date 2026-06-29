@@ -46,8 +46,8 @@ def to_canon(raw_tipo):
 
 # ---------------------------------------------------------------------------
 # Os 4 imóveis-demo (contrato §7) — bioma definido p/ casar com o marketplace.
-# CE-2300705 forçado a Cerrado: o demo (§10 passo 3) casa esse déficit com uma
-# oferta Cerrado, e não há oferta Caatinga no seed. Ver "ressalvas" no README.
+# CE-2300705 (Cerrado) casa com as ofertas Cerrado; CE-2313302 (Caatinga) casa
+# com as ofertas Caatinga adicionadas em OFERTAS. Cada déficit tem oferta no seu bioma.
 DEMOS = [
     {"cod": "MG-3127008-6CAD429ED6934E68818CD3FC21D797A6", "bioma": "Cerrado",
      "papel": "verde_excedente"},
@@ -98,6 +98,10 @@ OFERTAS = [
     ("venda",        15.4, "Cerrado",        61000.0, "",     None, "Formosa do Rio Preto","BA", 78),
     ("venda",        40.0, "Amazônia",      120000.0, "",     None, "Novo Progresso",     "PA", 1900),
     ("arrendamento", 12.0, "Mata Atlântica",  9000.0, "/ano",  120, "Sorocaba",           "SP", 2100),
+    # Caatinga: compatíveis com o déficit do CE-2313302 (Tauá/CE), p/ permitir "Casar".
+    ("venda",         4.5, "Caatinga",       14000.0, "",     None, "Tauá",               "CE", 12),
+    ("arrendamento",  3.2, "Caatinga",        1900.0, "/ano",  120, "Independência",      "CE", 28),
+    ("venda",         6.0, "Caatinga",       18500.0, "",     None, "Crateús",            "CE", 46),
 ]
 
 

@@ -6,7 +6,7 @@ import { Oferta, Pendencia, Propriedade, TipoOferta } from './types';
 export type Screen = 'hero' | 'painel' | 'marketplace' | 'analise' | 'corridor';
 export type LoginAction = 'anunciar' | 'compensar' | 'casar' | 'pendencias' | 'retificar' | null;
 export type UiFilter = 'todos' | 'venda' | 'aluguel';
-export type UiBioma = 'todos' | 'Cerrado' | 'Amazônia' | 'Mata Atlântica';
+export type UiBioma = 'todos' | 'Cerrado' | 'Caatinga' | 'Amazônia' | 'Mata Atlântica';
 export type UploadState = 'idle' | 'uploading' | 'done';
 
 export const MG_EXAMPLE = 'MG-3127008-6CAD429ED6934E68818CD3FC21D797A6';

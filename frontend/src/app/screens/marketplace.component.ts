@@ -104,6 +104,7 @@ export class MarketplaceComponent {
   biomas: { v: UiBioma; label: string }[] = [
     { v: 'todos', label: 'Todos' },
     { v: 'Cerrado', label: 'Cerrado' },
+    { v: 'Caatinga', label: 'Caatinga' },
     { v: 'Amazônia', label: 'Amazônia' },
     { v: 'Mata Atlântica', label: 'Mata Atlântica' },
   ];
