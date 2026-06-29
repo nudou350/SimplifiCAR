@@ -40,6 +40,15 @@ jobs:
             npm install
             npm run build
 
+            # Banco: aplica patches idempotentes de produção (não destrutivo; nunca apaga dados).
+            # O deploy não semeia o banco, então garantimos aqui os dados de demo que faltam.
+            cd /var/www/simplificar
+            if [ -f db/seed/prod_ensure.sql ]; then
+              DATABASE_URL=$(grep -E '^DATABASE_URL=' backend/.env | head -1 | cut -d= -f2- | sed 's/^"//;s/"$//')
+              psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/seed/prod_ensure.sql \
+                || echo "WARN: prod_ensure.sql falhou — deploy segue"
+            fi
+
             # Restart (env vars live in backend/.env, untracked — preserved by reset)
             pm2 reload simplificar-api --update-env || \
               pm2 start /var/www/simplificar/backend/ecosystem.config.js
